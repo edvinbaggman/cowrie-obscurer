@@ -19,7 +19,7 @@ passwd(cowrie_install_dir)
 shadow(cowrie_install_dir)
 cowrie_cfg(cowrie_install_dir)
 
-other collaborator:
+tejbirsi:
 hosts(cowrie_install_dir)
 hostname_py(cowrie_install_dir)
 issue(cowrie_install_dir)
