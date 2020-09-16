@@ -55,10 +55,12 @@ mount_additional = [
     'vmware-vmblock /run/vmblock-fuse fuse.vmware-vmblock rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other 0 0',
     'gvfsd-fuse /run/user/1001/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1001,group_id=1001 0 0',
     'rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime 0 0']
+
 mac_addresses = ['00:0F:3D:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex()),
                  'C4:A8:1D:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex()),
                  'F8:E9:03:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex()),
                  'BC:F6:85:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex())]
+
 ps_aux_sys = ['[acpi_thermal_pm]', '[ata_sff]', '[devfreq_wq]', '[ecryptfs-kthrea]', '[ext4-rsv-conver]',
               '[firewire_ohci]', '[fsnotify_mark]', '[hci0]', '[kdevtmpfs]', '[khugepaged]', '[khungtaskd]',
               '[kintegrityd]',
@@ -109,7 +111,7 @@ ipv6_number = list(map(int, ip_address.split('.')))
 
 
 def base_py(cowrie_install_dir):
-    with open("{0}{1}".format(cowrie_install_dir, "/cowrie/commands/base.py"), "r+") as base_file:
+    with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/base.py"), "r+") as base_file:
         user = random.choice(users)
         base = base_file.read()
         base_file.seek(0)
@@ -164,7 +166,7 @@ def base_py(cowrie_install_dir):
 
 
 def free_py(cowrie_install_dir):
-    with open("{0}{1}".format(cowrie_install_dir, "/cowrie/commands/free.py"), "r+") as free_file:
+    with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/free.py"), "r+") as free_file:
         free = free_file.read()
         free_file.seek(0)
         total = int(ram_size - ((3 * ram_size) / 100.0))
@@ -200,7 +202,7 @@ def free_py(cowrie_install_dir):
 
 
 def ifconfig_py(cowrie_install_dir):
-    with open("{0}{1}".format(cowrie_install_dir, "/cowrie/commands/ifconfig.py"), "r+") as ifconfig_file:
+    with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/ifconfig.py"), "r+") as ifconfig_file:
         ifconfig = ifconfig_file.read()
         ifconfig_file.seek(0)
         eth_rx = randint(10000000000, 500000000000)
@@ -482,7 +484,7 @@ def userdb(cowrie_install_dir):
 
 
 def fs_pickle(cowrie_install_dir):
-    launch = "python {0}/bin/fsctl {1}/data/fs.pickle".format(cowrie_install_dir, cowrie_install_dir)
+    launch = "python {0}/bin/fsctl {1}/share/cowrie/fs.pickle".format(cowrie_install_dir, cowrie_install_dir)
     p = pexpect.spawn(launch)
     p.expect(".*.\r\n\r\nfs.pickle:.*")
     p.sendline("rm -r /home/richard")
