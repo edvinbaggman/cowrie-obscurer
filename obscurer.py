@@ -1,5 +1,5 @@
-#!/usr/bin/python
-
+#!/usr/bin/pytho
+n
 import random
 import crypt
 import string
