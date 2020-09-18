@@ -1,5 +1,6 @@
-#!/usr/bin/pytho
-n
+#!/usr/bin/python3
+
+import urllib.request
 import random
 import crypt
 import string
@@ -56,10 +57,33 @@ mount_additional = [
     'gvfsd-fuse /run/user/1001/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1001,group_id=1001 0 0',
     'rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime 0 0']
 
-mac_addresses = ['00:0F:3D:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex()),
-                 'C4:A8:1D:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex()),
-                 'F8:E9:03:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex()),
-                 'BC:F6:85:{0}:{1}:{2}'.format(rand_hex(), rand_hex(), rand_hex())]
+################## boscutti939 - Getting the list of OUIs and making a MAC Address list
+print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
+try:
+	urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
+except Exception:
+	print("Could not retrieve the OUI file. Exiting.")
+	exit()
+ouiarray = []
+ouifile = open("oui.txt", 'r')
+ouifile.seek(0)
+while (True):
+	line = ouifile.readline()
+	if not line:
+		break
+	if line == "\n":
+		continue
+	else:
+		line = line.split('\t')
+		line = line[0].split(' ')
+		line = line[0]
+		pattern = re.compile("[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}")
+		if pattern.match(line):
+			ouiarray.append(line.replace('-',':'))
+mac_addresses = []
+for i in ouiarray:
+	mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex()))
+#########################################################################################
 
 ps_aux_sys = ['[acpi_thermal_pm]', '[ata_sff]', '[devfreq_wq]', '[ecryptfs-kthrea]', '[ext4-rsv-conver]',
               '[firewire_ohci]', '[fsnotify_mark]', '[hci0]', '[kdevtmpfs]', '[khugepaged]', '[khungtaskd]',
