@@ -269,8 +269,10 @@ def meminfo_py(cowrie_install_dir):
         'NFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:     {19} kB\nCommitted_AS:    {20} kB\n' \
         'VmallocTotal:   {21} kB\nVmallocUsed:           0 kB\nVmallocChunk:          0 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:    {22} kB\n' \
         'HugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\n' \
-        'DirectMap4k:      {23} kB\nDirectMap2M:      {24} kB'.format(kb_ram, '{0}'.format(kb_ram / 2), '{0}'.format(
-            kb_ram - random.randint(100000, 400000)),
+        'DirectMap4k:      {23} kB\nDirectMap2M:      {24} kB'.format(kb_ram, 
+	'{0}'.format(kb_ram / 2), 
+								      '{0}'.format(
+            								  kb_ram - random.randint(100000, 400000)),
                                                                       '{0}'.format(
                                                                           kb_ram - random.randint(100000, 200000)),
                                                                       '{0}'.format(kb_ram / 2),
@@ -326,7 +328,7 @@ def cpuinfo(cowrie_install_dir):
         cpu_mhz = "{0}{1}".format(processor.split("@ ")[1][:-3].replace(".", ""), "0.00")
         no_processors = processor.split("TM) i")[1].split("-")[0]
         cpu_replacements = {"Intel(R) Core(TM)2 Duo CPU     E8200  @ 2.66GHz": processor,
-                            ": 23": ": {0}".format(random.randint(60, 69)), ": 2133.304": ": {0}".format(cpu_mhz),
+                            ": 23": ": {0}".format(random.randint(60, 69)), ": 2133.305": ": {0}".format(cpu_mhz),
                             ": 10": ": {0}".format(random.randint(10, 25)),
                             ": 4270.03": ": {0}".format(random.randint(4000.00, 7000.00)),
                             ": 6144 KB": ": {0} KB".format(1024 * random.choice(range(2, 16, 2))),
