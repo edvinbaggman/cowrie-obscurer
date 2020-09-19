@@ -61,6 +61,7 @@ mac_addresses = []
 
 ################## boscutti939 - Getting the list of OUIs and making a MAC Address list
 def generate_mac():
+	global mac_addresses
 	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
 	try:
 		urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
