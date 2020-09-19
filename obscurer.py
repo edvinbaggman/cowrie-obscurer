@@ -511,15 +511,24 @@ def userdb(cowrie_install_dir):
 
 
 def fs_pickle(cowrie_install_dir):
-    launch = "python {0}/bin/fsctl {1}/share/cowrie/fs.pickle".format(cowrie_install_dir, cowrie_install_dir)
-    p = pexpect.spawn(launch)
-    p.expect(".*.\r\n\r\nfs.pickle:.*")
-    p.sendline("rm -r /home/richard")
-    p.expect(".*fs.pickle.*")
-    for user in users:
-        p.sendline("mkdir /home/{0}".format(user))
-        p.expect(".*fs.pickle.*")
-    p.sendline("exit")
+	try:
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home"))
+	except FileExistsError:
+		pass
+	try:
+		os.remove("{0}{1}".format(cowrie_install_dir, "/share/cowrie/fs.pickle"))
+	except FileNotFoundError:
+		pass
+	os.system("{0}/bin/createfs -l {0}/honeyfs -o {0}/share/cowrie/fs.pickle".format(cowrie_install_dir))
+    # launch = "python {0}/bin/fsctl {1}/share/cowrie/fs.pickle".format(cowrie_install_dir, cowrie_install_dir)
+    # p = pexpect.spawn(launch)
+    # p.expect(".*.\r\n\r\nfs.pickle:.*")
+    # p.sendline("rm -r /home/richard")
+    # p.expect(".*fs.pickle.*")
+    # for user in users:
+    #     p.sendline("mkdir /home/{0}".format(user))
+    #     p.expect(".*fs.pickle.*")
+    # p.sendline("exit")
 
 
 def allthethings(cowrie_install_dir):
