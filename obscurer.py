@@ -57,32 +57,35 @@ mount_additional = [
     'gvfsd-fuse /run/user/1001/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1001,group_id=1001 0 0',
     'rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime 0 0']
 
-################## boscutti939 - Getting the list of OUIs and making a MAC Address list
-print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
-try:
-	urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
-except Exception:
-	print("Could not retrieve the OUI file. Exiting.")
-	exit()
-ouiarray = []
-ouifile = open("oui.txt", 'r')
-ouifile.seek(0)
-while (True):
-	line = ouifile.readline()
-	if not line:
-		break
-	if line == "\n":
-		continue
-	else:
-		line = line.split('\t')
-		line = line[0].split(' ')
-		line = line[0]
-		pattern = re.compile("[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}")
-		if pattern.match(line):
-			ouiarray.append(line.replace('-',':'))
 mac_addresses = []
-for i in ouiarray:
-	mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex()))
+
+################## boscutti939 - Getting the list of OUIs and making a MAC Address list
+def generate_mac():
+	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
+	try:
+		urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
+	except Exception:
+		print("Could not retrieve the OUI file. Exiting.")
+		exit()
+	ouiarray = []
+	ouifile = open("oui.txt", 'r')
+	ouifile.seek(0)
+	while (True):
+		line = ouifile.readline()
+		if not line:
+			break
+		if line == "\n":
+			continue
+		else:
+			line = line.split('\t')
+			line = line[0].split(' ')
+			line = line[0]
+			pattern = re.compile("[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}")
+			if pattern.match(line):
+				ouiarray.append(line.replace('-',':'))
+	mac_addresses = []
+	for i in ouiarray:
+		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex()))
 #########################################################################################
 
 ps_aux_sys = ['[acpi_thermal_pm]', '[ata_sff]', '[devfreq_wq]', '[ecryptfs-kthrea]', '[ext4-rsv-conver]',
@@ -449,7 +452,7 @@ def shadow(cowrie_install_dir):
 
 
 def cowrie_cfg(cowrie_install_dir):
-	with open("{0}{1}".format(cowrie_install_dir, "/cowrie.cfg.dist"), "r+") as cowrie_cfg:
+	with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "r+") as cowrie_cfg:
 		cowrie_config = cowrie_cfg.read()
 		cowrie_cfg.seek(0)
 		replacements = {"svr04": hostname, "#fake_addr = 192.168.66.254": "fake_addr = {0}".format(ip_address),
@@ -521,6 +524,7 @@ def fs_pickle(cowrie_install_dir):
 
 def allthethings(cowrie_install_dir):
     try:
+    	generate_mac()
         base_py(cowrie_install_dir)
         free_py(cowrie_install_dir)
         ifconfig_py(cowrie_install_dir)
