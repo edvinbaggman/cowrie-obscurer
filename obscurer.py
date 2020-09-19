@@ -553,7 +553,7 @@ def allthethings(cowrie_install_dir):
 		fs_pickle(cowrie_install_dir)
 	except:
 		e = sys.exc_info()[1]
-		print "\nError: {0}\nCheck file path and try again.".format(e)
+		print("\nError: {0}\nCheck file path and try again.".format(e))
 		pass
 
 header = """\
@@ -592,13 +592,13 @@ if __name__ == "__main__":
 	(options, args) = parser.parse_args()
 
 	if len(args) < 1:
-		print header
-		print "[!] Not enough Arguments, Need at least file path"
+		print(header)
+		print("[!] Not enough Arguments, Need at least file path")
 		parser.print_help()
 		sys.exit()
 
 	elif options.allthethings is True:
-		print header
+		print(header)
 		allthethings(args[0])
-		print output
+		print(output)
 		sys.exit()
