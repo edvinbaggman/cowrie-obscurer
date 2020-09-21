@@ -497,6 +497,18 @@ def issue(cowrie_install_dir):
 
 
 def userdb(cowrie_install_dir):
+    with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
+        userdb = userdb_file.read()
+        userdb_file.seek(0)
+        replacements = {"richard:x:*": "", "richard:x:fout": ""}
+        substrs = sorted(replacements, key=len, reverse=True)
+        regexp = re.compile('|'.join(map(re.escape, substrs)))
+        userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
+        userdb_file.write(userdb_update.strip("\n"))
+        for user in users:
+            userdb_file.write("\n{0}:x:*".format(user))
+        userdb_file.truncate()
+        userdb_file.close()
 	with open("{0}{1}".format(cowrie_install_dir, "/data/userdb.txt"), "r+") as userdb_file:
 		userdb = userdb_file.read()
 		userdb_file.seek(0)
