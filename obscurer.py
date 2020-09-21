@@ -513,7 +513,6 @@ def issue(cowrie_install_dir):
 
 
 def userdb(cowrie_install_dir):
-<<<<<<< HEAD
 	print  ('editing userdb') #
     with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
         userdb = userdb_file.read()
@@ -528,9 +527,8 @@ def userdb(cowrie_install_dir):
         userdb_file.truncate()
         userdb_file.close()
 	with open("{0}{1}".format(cowrie_install_dir, "/data/userdb.txt"), "r+") as userdb_file:
-=======
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
->>>>>>> c94188e84249d8ee2b5d076f7a51e748b6395dd0
+
 		userdb = userdb_file.read()
 		userdb_file.seek(0)
 		replacements = {"richard:x:*": "", "richard:x:fout": ""}
