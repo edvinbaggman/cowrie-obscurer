@@ -272,7 +272,7 @@ def version_uname(cowrie_install_dir):
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/version"), "w")  as version_file:
 		version_file.write(version)
 		version_file.close()
-	with open("{0}{1}".format(cowrie_install_dir, "/cowrie/commands/uname.py"), "r+")  as uname_file:
+	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/uname.py"), "r+")  as uname_file:
 		uname_py = uname_file.read()
 		uname_file.seek(0)
 		test = ""
@@ -381,7 +381,7 @@ def group(cowrie_install_dir):
 			if y == 0:
 				new_user = "{0}:x:{1}:{2}:{3},,,:/home/{4}:/bin/bash".format(users[y], str(num), str(num), users[y],
 																			 users[y])
-				replacements = {"richard": users[y], "sudo:x:27:": "{0}{1}".format("sudo:x:27:", users[y])}
+				replacements = {"phil": users[y], "sudo:x:27:": "{0}{1}".format("sudo:x:27:", users[y])}
 				substrs = sorted(replacements, key=len, reverse=True)
 				regexp = re.compile('|'.join(map(re.escape, substrs)))
 				group_update = regexp.sub(lambda match: replacements[match.group(0)], group)
@@ -408,7 +408,7 @@ def passwd(cowrie_install_dir):
 			if y == 1:
 				new_user = "{0}:x:{1}:{2}:{3},,,:/home/{4}:/bin/bash".format(users[y-1], str(num), str(num), users[y-1],
 																			 users[y-1])
-				replacements = {"richard:x:1000:1000:Richard Texas,,,:/home/richard:/bin/bash": new_user}
+				replacements = {"phil:x:1000:1000:phil Texas,,,:/home/phil:/bin/bash": new_user}
 				substrs = sorted(replacements, key=len, reverse=True)
 				regexp = re.compile('|'.join(map(re.escape, substrs)))
 				passwd_update = regexp.sub(lambda match: replacements[match.group(0)], passwd)
@@ -438,7 +438,7 @@ def shadow(cowrie_install_dir):
 				new_user = "{0}:{1}:{2}:0:99999:7:::".format(users[x-1], gen_pass, random.randint(16000, 17200))
 				new_root_pass = crypt.crypt("password", "$6$" + salt)
 				replacements = {"15800": str(days_since),
-								"richard:$6$ErqInBoz$FibX212AFnHMvyZdWW87bq5Cm3214CoffqFuUyzz.ZKmZ725zKqSPRRlQ1fGGP02V/WawQWQrDda6YiKERNR61:15800:0:99999:7:::\n": new_user,
+								"phil:$6$ErqInBoz$FibX212AFnHMvyZdWW87bq5Cm3214CoffqFuUyzz.ZKmZ725zKqSPRRlQ1fGGP02V/WawQWQrDda6YiKERNR61:15800:0:99999:7:::\n": new_user,
 								"$6$4aOmWdpJ$/kyPOik9rR0kSLyABIYNXgg/UqlWX3c1eIaovOLWphShTGXmuUAMq6iu9DrcQqlVUw3Pirizns4u27w3Ugvb6": new_root_pass}
 				substrs = sorted(replacements, key=len, reverse=True)
 				regexp = re.compile('|'.join(map(re.escape, substrs)))
@@ -500,7 +500,7 @@ def userdb(cowrie_install_dir):
 	with open("{0}{1}".format(cowrie_install_dir, "/data/userdb.txt"), "r+") as userdb_file:
 		userdb = userdb_file.read()
 		userdb_file.seek(0)
-		replacements = {"richard:x:*": "", "richard:x:fout": ""}
+		replacements = {"phil:x:*": "", "phil:x:fout": ""}
 		substrs = sorted(replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
@@ -524,7 +524,7 @@ def fs_pickle(cowrie_install_dir):
 	# launch = "python {0}/bin/fsctl {1}/share/cowrie/fs.pickle".format(cowrie_install_dir, cowrie_install_dir)
 	# p = pexpect.spawn(launch)
 	# p.expect(".*.\r\n\r\nfs.pickle:.*")
-	# p.sendline("rm -r /home/richard")
+	# p.sendline("rm -r /home/phil")
 	# p.expect(".*fs.pickle.*")
 	# for user in users:
 	#     p.sendline("mkdir /home/{0}".format(user))
