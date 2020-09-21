@@ -11,6 +11,7 @@ from optparse import OptionParser
 import sys
 import pexpect
 import os
+import shutil
 
 def rand_hex():
 	return '{0}{1}'.format(random.choice('0123456789ABCDEF'), random.choice('0123456789ABCDEF'))
@@ -21,7 +22,7 @@ def random_int(len):
 usernames = ['admin', 'support', 'guest', 'user', 'service', 'tech', 'administrator']
 passwords = ['system', 'enable', 'password', 'shell', 'root', 'support']
 services = ['syslog', 'mongodb', 'statd', 'pulse']
-os = ['Ubuntu 14.04.5 LTS', 'Ubuntu 16.04 LTS', 'Debian GNU/Linux 6']
+operatingsystem = ['Ubuntu 14.04.5 LTS', 'Ubuntu 16.04 LTS', 'Debian GNU/Linux 6']
 hostnames = ['web', 'db', 'nas', 'dev', 'backups', 'dmz']
 hostname = random.choice(hostnames)
 nix_versions = {
@@ -56,39 +57,6 @@ mount_additional = [
 	'vmware-vmblock /run/vmblock-fuse fuse.vmware-vmblock rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other 0 0',
 	'gvfsd-fuse /run/user/1001/gvfs fuse.gvfsd-fuse rw,nosuid,nodev,relatime,user_id=1001,group_id=1001 0 0',
 	'rpc_pipefs /run/rpc_pipefs rpc_pipefs rw,relatime 0 0']
-
-mac_addresses = []
-
-################## boscutti939 - Getting the list of OUIs and making a MAC Address list
-def generate_mac():
-	print ('generating MAC addresses') #
-	global mac_addresses
-	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
-	try:
-		urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
-	except Exception:
-		print("Could not retrieve the OUI file. Exiting.")
-		exit()
-	ouiarray = []
-	ouifile = open("oui.txt", 'r')
-	ouifile.seek(0)
-	while (True):
-		line = ouifile.readline()
-		if not line:
-			break
-		if line == "\n":
-			continue
-		else:
-			line = line.split('\t')
-			line = line[0].split(' ')
-			line = line[0]
-			pattern = re.compile("[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}")
-			if pattern.match(line):
-				ouiarray.append(line.replace('-',':'))
-	mac_addresses = []
-	for i in ouiarray:
-		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex()))
-#########################################################################################
 
 ps_aux_sys = ['[acpi_thermal_pm]', '[ata_sff]', '[devfreq_wq]', '[ecryptfs-kthrea]', '[ext4-rsv-conver]',
 			  '[firewire_ohci]', '[fsnotify_mark]', '[hci0]', '[kdevtmpfs]', '[khugepaged]', '[khungtaskd]',
@@ -127,6 +95,38 @@ while i < user_count:
 	service.append(random.choice(services))
 	password.append(random.choice(passwords))
 	i = i + 1
+
+################## boscutti939 - Getting the list of OUIs and making a MAC Address list
+def generate_mac():
+	global mac_addresses
+	mac_addresses = []
+	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
+	try:
+		urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
+	except Exception:
+		print("Could not retrieve the OUI file. Exiting.")
+		exit()
+	print("Generating random MAC addresses.")
+	ouiarray = []
+	ouifile = open("oui.txt", 'r')
+	ouifile.seek(0)
+	while (True):
+		line = ouifile.readline()
+		if not line:
+			break
+		if line == "\n":
+			continue
+		else:
+			line = line.split('\t')
+			line = line[0].split(' ')
+			line = line[0]
+			pattern = re.compile("[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}")
+			if pattern.match(line):
+				ouiarray.append(line.replace('-',':'))
+	mac_addresses = []
+	for i in ouiarray:
+		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex()))
+#########################################################################################
 
 ## Generate Host Profile ##
 ram_size = 512 * random.choice(range(2, 16, 2))
@@ -233,38 +233,36 @@ def free_py(cowrie_install_dir):
 
 
 def ifconfig_py(cowrie_install_dir):
-	print ('editing ifconfig_py') #
+	print ('editing ifconfig_py')
+	macaddress = random.choice(mac_addresses)
+	macaddress2 = random.choice(mac_addresses)
+	while macaddress2 == macaddress:
+		macaddress2 = random.choice(mac_addreses)
 	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/ifconfig.py"), "r+") as ifconfig_file:
 		ifconfig = ifconfig_file.read()
 		ifconfig_file.seek(0)
+		hwaddrstring = "HWaddr = \"{0}\"".format(macaddress)
 		eth_rx = randint(10000000000, 500000000000)
 		eth_tx = randint(10000000000, 500000000000)
 		lo_rxtx = randint(10000, 99999)
-		ifconfig_replacements = {'04:01:16:df:2d:01': '{0}'.format(random.choice(mac_addresses)),
-								 '139435762': str(randint(1000, 100000000)), '116082382': str(randint(1000, 100000000)),
-								 '102191499830': str(eth_rx), '102.1': '{0}'.format(str(eth_rx / 1000000000)),
-								 '68687923025': str(eth_tx), '68.6': '{0}'.format(str(eth_tx / 1000000000)),
-								 '19932': str(lo_rxtx), '19.9': '{0}'.format(str(lo_rxtx / 1000)),
-								 '110': '{0}'.format(randint(50, 250)),
-								 'fe80::601:16ff:fedf:2d01/64': '2002:{:02x}{:02x}:{:02x}{:02x}::'.format(*ipv6_number)}
+		ifconfig_replacements = {"""HWaddr = \"%02x:%02x:%02x:%02x:%02x:%02x\" % (
+    randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255))""": '{0}'.format(hwaddrstring)}
 		substrs = sorted(ifconfig_replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		ifconfig_update = regexp.sub(lambda match: ifconfig_replacements[match.group(0)], ifconfig)
 		ifconfig_file.write(ifconfig_update)
 		ifconfig_file.truncate()
 		ifconfig_file.close()
-
-
-def arp_py(cowrie_install_dir):
-	print ('editing arp_py') #
+	print ("Editing arp file.")
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/net/arp"), "r+") as arp_file:
 		arp = arp_file.read()
 		arp_file.seek(0)
+
 		base_ip = '.'.join(ip_address.split('.')[0:3])
 		arp_replacements = {'192.168.1.27': '{0}.{1}'.format(base_ip, random.randint(1, 255)),
 							'192.168.1.1': '{0}.{1}'.format(base_ip, '1'),
-							'52:5e:0a:40:43:c8': '{0}'.format(random.choice(mac_addresses)),
-							'00:00:5f:00:0b:12': '{0}'.format(random.choice(mac_addresses))}
+							'52:5e:0a:40:43:c8': '{0}'.format(macaddress),
+							'00:00:5f:00:0b:12': '{0}'.format(macaddress2)}
 		substrs = sorted(arp_replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		arp_update = regexp.sub(lambda match: arp_replacements[match.group(0)], arp)
@@ -466,17 +464,19 @@ def shadow(cowrie_install_dir):
 
 def cowrie_cfg(cowrie_install_dir):
 	print ('editing cowrie_cfg') #
+	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg")):
+		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg.dist"),"{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "r+") as cowrie_cfg:
 		cowrie_config = cowrie_cfg.read()
 		cowrie_cfg.seek(0)
 		replacements = {"svr04": hostname, "#fake_addr = 192.168.66.254": "fake_addr = {0}".format(ip_address),
-		"ssh_version_string = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2": "ssh_version_string = {0}".format(sshversion), "#listen_port = 2222": "listen_port = 22",
-		"tcp:2222": "tcp:22"}
+		"ssh_version_string = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2": "ssh_version_string = {0}".format(sshversion), "#listen_port = 2222": "listen_port = 2222",
+		"tcp:2222": "tcp:2222"}
 		substrs = sorted(replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		config_update = regexp.sub(lambda match: replacements[match.group(0)], cowrie_config)
 		cowrie_cfg.close()
-		with open("{0}{1}".format(cowrie_install_dir, "/cowrie.cfg"), "w+") as cowrie_cfg_update:
+		with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "w+") as cowrie_cfg_update:
 			cowrie_cfg_update.write(config_update)
 			cowrie_cfg_update.truncate()
 			cowrie_cfg_update.close()
@@ -507,40 +507,16 @@ def issue(cowrie_install_dir):
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/issue"), "r+") as issue_file:
 		issue = issue_file.read()
 		issue_file.seek(0)
-		issue_file.write(issue.replace("Debian GNU/Linux 7", random.choice(os)))
+		issue_file.write(issue.replace("Debian GNU/Linux 7", random.choice(operatingsystem)))
 		issue_file.truncate()
 		issue_file.close()
 
 
 def userdb(cowrie_install_dir):
-	print  ('editing userdb') #
-    with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
-        userdb = userdb_file.read()
-        userdb_file.seek(0)
-        replacements = {"richard:x:*": "", "richard:x:fout": ""}
-        substrs = sorted(replacements, key=len, reverse=True)
-        regexp = re.compile('|'.join(map(re.escape, substrs)))
-        userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
-        userdb_file.write(userdb_update.strip("\n"))
-        for user in users:
-            userdb_file.write("\n{0}:x:*".format(user))
-        userdb_file.truncate()
-        userdb_file.close()
-	with open("{0}{1}".format(cowrie_install_dir, "/data/userdb.txt"), "r+") as userdb_file:
+	print ('editing userdb') #
+	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
+		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
-
-		userdb = userdb_file.read()
-		userdb_file.seek(0)
-		replacements = {"richard:x:*": "", "richard:x:fout": ""}
-		substrs = sorted(replacements, key=len, reverse=True)
-		regexp = re.compile('|'.join(map(re.escape, substrs)))
-		userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
-		userdb_file.write(userdb_update.strip("\n"))
-		for user in users:
-			userdb_file.write("\n{0}:x:*".format(user))
-		userdb_file.truncate()
-		userdb_file.close()
-	with open("{0}{1}".format(cowrie_install_dir, "/data/userdb.txt"), "r+") as userdb_file:
 		userdb = userdb_file.read()
 		userdb_file.seek(0)
 		replacements = {"phil:x:*": "", "phil:x:fout": ""}
@@ -552,6 +528,30 @@ def userdb(cowrie_install_dir):
 			userdb_file.write("\n{0}:x:*".format(user))
 		userdb_file.truncate()
 		userdb_file.close()
+	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
+		userdb = userdb_file.read()
+		userdb_file.seek(0)
+		replacements = {"phil:x:*": "", "phil:x:fout": ""}
+		substrs = sorted(replacements, key=len, reverse=True)
+		regexp = re.compile('|'.join(map(re.escape, substrs)))
+		userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
+		userdb_file.write(userdb_update.strip("\n"))
+		for user in users:
+			userdb_file.write("\n{0}:x:*".format(user))
+		userdb_file.truncate()
+		userdb_file.close()
+	# with open("{0}{1}".format(cowrie_install_dir, "/data/userdb.txt"), "r+") as userdb_file:
+	# 	userdb = userdb_file.read()
+	# 	userdb_file.seek(0)
+	# 	replacements = {"phil:x:*": "", "phil:x:fout": ""}
+	# 	substrs = sorted(replacements, key=len, reverse=True)
+	# 	regexp = re.compile('|'.join(map(re.escape, substrs)))
+	# 	userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
+	# 	userdb_file.write(userdb_update.strip("\n"))
+	# 	for user in users:
+	# 		userdb_file.write("\n{0}:x:*".format(user))
+	# 	userdb_file.truncate()
+	# 	userdb_file.close()
 
 
 def fs_pickle(cowrie_install_dir):
@@ -577,13 +577,11 @@ def fs_pickle(cowrie_install_dir):
 
 
 def allthethings(cowrie_install_dir):
-	print ('editing allthethings')
 	try:
 		generate_mac()
-		base_py(cowrie_install_dir)
-		free_py(cowrie_install_dir)
+		# base_py(cowrie_install_dir)
+		# free_py(cowrie_install_dir)
 		ifconfig_py(cowrie_install_dir)
-		arp_py(cowrie_install_dir)
 		version_uname(cowrie_install_dir)
 		meminfo_py(cowrie_install_dir)
 		mounts(cowrie_install_dir)
@@ -603,8 +601,8 @@ def allthethings(cowrie_install_dir):
 		pass
 
 header = """\
-	   _
-	  | |
+       _
+      | |
   ___ | |__  ___  ___ _   _ _ __ ___ _ __
  / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
 | (_) | |_) \__ \ (__| |_| | | |  __/ |
@@ -630,7 +628,7 @@ SSH Version: {4}
 SSH Listen Port: {5}
 Internal IP: {6}
 
-""".format(users, password, hostname, version, sshversion, "22", ip_address)
+""".format(users, password, hostname, version, sshversion, "2222", ip_address)
 
 if __name__ == "__main__":
 	parser = OptionParser(usage='usage: python %prog cowrie/install/dir [options]')
