@@ -156,7 +156,7 @@ ipv6_number = list(map(int, ip_address.split('.')))
 
 
 def base_py(cowrie_install_dir):
-	print ('editing base_py') #
+	print ('Editing base.py') #
 	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/base.py"), "r+") as base_file:
 		user = random.choice(users)
 		base = base_file.read()
@@ -211,8 +211,8 @@ def base_py(cowrie_install_dir):
 		base_file.close()
 
 
-def free_py(cowrie_install_dir):
-	print ('editing free_py') #
+#def free_py(cowrie_install_dir):
+	print ('Editing free.py') #
 	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/free.py"), "r+") as free_file:
 		free = free_file.read()
 		free_file.seek(0)
@@ -291,7 +291,7 @@ def ifconfig_py(cowrie_install_dir):
 
 
 def version_uname(cowrie_install_dir):
-	print ('editing version_uname') #
+	print ('Changing uname and version.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/version"), "w")  as version_file:
 		version_file.write(version)
 		version_file.close()
@@ -312,7 +312,7 @@ def version_uname(cowrie_install_dir):
 
 
 def meminfo_py(cowrie_install_dir):
-	print ('replacing meminfo_py values') #
+	print ('replacing meminfo_py values.') #
 	kb_ram = ram_size * 1000
 	meminfo = \
 		'MemTotal:        {0} kB\nMemFree:         {1} kB\nMemAvailable:    {2} kB\nCached:          {3} kB\nSwapCached:            0 kB\n' \
@@ -354,7 +354,7 @@ def meminfo_py(cowrie_install_dir):
 
 
 def mounts(cowrie_install_dir):
-	print ('editing mounts') #
+	print ('Changing mounts.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/mounts"), "r+") as mounts_file: 
 		mounts = mounts_file.read()
 		mounts_file.seek(0)
@@ -373,7 +373,7 @@ def mounts(cowrie_install_dir):
 
 
 def cpuinfo(cowrie_install_dir):
-	print ('replacing default cpuinfo') #
+	print ('Replacing CPU Info.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/cpuinfo"), "r+") as cpuinfo_file:
 		cpuinfo = cpuinfo_file.read()
 		cpuinfo_file.seek(0)
@@ -395,7 +395,7 @@ def cpuinfo(cowrie_install_dir):
 
 
 def group(cowrie_install_dir):
-	print ('editing group file') #
+	print ('Editing group file.')
 	y = 0
 	num = 1001
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/group"), "r+") as group_file:
@@ -423,7 +423,7 @@ def group(cowrie_install_dir):
 
 
 def passwd(cowrie_install_dir):
-	print ('editing passwd file') #
+	print ('Changing passwd file.')
 	y = 1
 	num = 1000
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/passwd"), "r+") as passwd_file:
@@ -449,7 +449,7 @@ def passwd(cowrie_install_dir):
 
 
 def shadow(cowrie_install_dir):
-	print ('editing shadow file') #
+	print ('Changing shadow file.')
 	x = 1
 	shadow_update = ""
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/shadow"), "r+") as shadow_file:
@@ -480,7 +480,7 @@ def shadow(cowrie_install_dir):
 
 
 def cowrie_cfg(cowrie_install_dir):
-	print ('editing cowrie_cfg') #
+	print ('Editing main configuration.')
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg")):
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg.dist"),"{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "r+") as cowrie_cfg:
@@ -500,7 +500,7 @@ def cowrie_cfg(cowrie_install_dir):
 
 
 def hosts(cowrie_install_dir):
-	print ('editing hosts') #
+	print ('Replacing Hosts.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/hosts"), "r+") as host_file:
 		hosts = host_file.read()
 		host_file.seek(0)
@@ -510,7 +510,7 @@ def hosts(cowrie_install_dir):
 
 
 def hostname_py(cowrie_install_dir):
-	print ('editing hostname_py') #
+	print ('Changing hostname.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/hostname"), "r+") as hostname_file:
 		hostname_contents = hostname_file.read()
 		hostname_file.seek(0)
@@ -520,7 +520,7 @@ def hostname_py(cowrie_install_dir):
 
 
 def issue(cowrie_install_dir):
-	print ('editing issue') #
+	print ('Changing issue.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/issue"), "r+") as issue_file:
 		issue = issue_file.read()
 		issue_file.seek(0)
@@ -530,7 +530,7 @@ def issue(cowrie_install_dir):
 
 
 def userdb(cowrie_install_dir):
-	print ('Editing user database, adding new users.') #
+	print ('Editing user database, adding new users.')
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
@@ -547,7 +547,7 @@ def userdb(cowrie_install_dir):
 		userdb_file.close()
 
 def fs_pickle(cowrie_install_dir):
-	print ('Creating filesystem.') #
+	print ('Creating filesystem.')
 	try:
 		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home"))
 	except FileExistsError:
@@ -557,16 +557,6 @@ def fs_pickle(cowrie_install_dir):
 	except FileNotFoundError:
 		pass
 	os.system("{0}/bin/createfs -l {0}/honeyfs -o {0}/share/cowrie/fs.pickle".format(cowrie_install_dir))
-	# launch = "python {0}/bin/fsctl {1}/share/cowrie/fs.pickle".format(cowrie_install_dir, cowrie_install_dir)
-	# p = pexpect.spawn(launch)
-	# p.expect(".*.\r\n\r\nfs.pickle:.*")
-	# p.sendline("rm -r /home/phil")
-	# p.expect(".*fs.pickle.*")
-	# for user in users:
-	#     p.sendline("mkdir /home/{0}".format(user))
-	#     p.expect(".*fs.pickle.*")
-	# p.sendline("exit")
-
 
 def allthethings(cowrie_install_dir):
 	try:
