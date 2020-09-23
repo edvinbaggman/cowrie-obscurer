@@ -10,9 +10,10 @@ Be aware this will wipe out any custome configuration you have made to the cowri
 
 ## Requirements 
 
-* Fresh Cowrie install
-* python 2.7
+* Fresh Cowrie install (no edited configurations or files)
+* python 3
 * pip install pexpect
+* pip install urllib
 
 ## Usage
 
@@ -24,7 +25,7 @@ Options:
   -a, --allthethings  Change all of the default values
   
 Example:
-python obscurer.py -a /opt/cowrie 
+python obscurer.py -a /home/cowrie/cowrie/
 ```
 
 Once the script has completed restart the Cowrie service and SSH to the host to confirm changes have been made.
