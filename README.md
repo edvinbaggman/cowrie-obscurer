@@ -1,17 +1,17 @@
 # Obscurer
 
-## Cowrie Honeypot Obscurer
+## Cowrie Honeypot Obscurer (2020)
 
 A Python script designed to remove (nearly) all default values from a Cowrie Honey Pot installation. 
 
 A random host profile with new users, hostname, groups, file shares, harddrive(s) sizes, mounts, cpu, ram, OS version, IP address, MAC addresses and SSH version is created. In theory this makes it much harder to easily detect default cowrie honeypot installations.
 
-Be aware this will wipe out any custome configuration you have made to the cowrie.cfg.
+Be aware this will wipe out any custom configuration you have made to the cowrie.cfg.
 
-## Requirements 
+## Requirements
 
 * Fresh Cowrie install (no edited configurations or files)
-* python 3
+* Python 3
 * pip install pexpect
 * pip install urllib
 
