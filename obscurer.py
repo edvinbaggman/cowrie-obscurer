@@ -98,26 +98,29 @@ while i < user_count:
 
 def getoui():
 	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
+	print("This may take a minute.")
 	try:
 		urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
+		return 0
 	except Exception:
-		print("Could not retrieve the OUI file. Exiting.")
-		sys.exit()
+		print("Could not retrieve the OUI file. Skipping MAC address changes.")
+		return 1
 
 ################## boscutti939 - Getting the list of OUIs and making a MAC Address list
 def generate_mac():
-	global mac_addresses
 	mac_addresses = []
 	if os.path.isfile("oui.txt"):
 		parsebool = ""
-		print("An oui file has already been downloaded. Parse this file or retrieve a new one?")
-		while parsebool != 'y' and parsebool != 'n':
-			parsebool = input("Input (y/n):")
+		print("An oui file has been found. Parse this file or retrieve a new one?")
+		while parsebool != 'p' and parsebool != 'r':
+			parsebool = input("Input (p/r):")
 			parsebool.lower()
-		if parsebool == 'n':
-			getoui()
+		if parsebool == 'r':
+			if getoui() == 1:
+				return 1
 	else:
-		getoui()
+		if getoui() == 1:
+			return 1
 	print("Generating random MAC addresses.")
 	ouiarray = []
 	ouifile = open("oui.txt", 'r')
@@ -138,6 +141,7 @@ def generate_mac():
 	mac_addresses = []
 	for i in ouiarray:
 		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex()))
+	return mac_addresses
 #########################################################################################
 
 ## Generate Host Profile ##
@@ -245,7 +249,10 @@ def free_py(cowrie_install_dir):
 
 
 def ifconfig_py(cowrie_install_dir):
-	print ('editing ifconfig_py')
+	print ("Editing ifconfig and arp file.")
+	mac_addresses = generate_mac()
+	if mac_addresses == 1:
+		return
 	macaddress = random.choice(mac_addresses)
 	macaddress2 = random.choice(mac_addresses)
 	while macaddress2 == macaddress:
@@ -563,7 +570,6 @@ def fs_pickle(cowrie_install_dir):
 
 def allthethings(cowrie_install_dir):
 	try:
-		generate_mac()
 		# base_py(cowrie_install_dir)
 		# free_py(cowrie_install_dir)
 		ifconfig_py(cowrie_install_dir)
@@ -586,16 +592,18 @@ def allthethings(cowrie_install_dir):
 		pass
 
 header = """\
-       _
-      | |
-  ___ | |__  ___  ___ _   _ _ __ ___ _ __
- / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
-| (_) | |_) \__ \ (__| |_| | | |  __/ |
- \___/|_.__/|___/\___|\__,_|_|  \___|_|
+        _
+       | |
+    __ | |__  ___  ___ _   _ _ __ ___ _ __
+  / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
+ | (_) | |_) \__ \ (__| |_| | | |  __/ |
+  \___/|_.__/|___/\___|\__,_|_|  \___|_|
 
-  https://github.com/boscutti939/obscurer
+      https://github.com/boscutti939/obscurer
 
-		Cowrie Honeypot Obscurer
+           Cowrie Honeypot Obscurer
+
+  Forked from https://github.com/411Hall/obscurer
 
 """
 
