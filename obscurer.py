@@ -340,8 +340,6 @@ def mounts(cowrie_install_dir):
 		mounts = mounts_file.read()
 		mounts_file.seek(0)
 		mounts_replacements = {'rootfs / rootfs rw 0 0': '', '10240': '{0}'.format(random.randint(10000, 25000)),
-							   '997843': '{0}'.format(random.randint(950000, 1000000)),
-							   '1613336': '{0}'.format(random.randint(1500000, 2500000)),
 							   '/dev/dm-0 / ext3': '/dev/{0}1 / ext4'.format(random.choice(physical_hd)),
 							   '/dev/sda1 /boot ext2 rw,relatime 0 0': '/dev/{0}2 /{1} ext4 rw,nosuid,relatime 0 0'.format(
 								   random.choice(physical_hd), random.choice(mount_names)),
@@ -417,7 +415,7 @@ def passwd(cowrie_install_dir):
 			if y == 1:
 				new_user = "{0}:x:{1}:{2}:{3},,,:/home/{4}:/bin/bash".format(users[y-1], str(num), str(num), users[y-1],
 																			 users[y-1])
-				replacements = {"phil:x:1000:1000:phil Texas,,,:/home/phil:/bin/bash": new_user}
+				replacements = {"phil:x:1000:1000:Phil California,,,:/home/phil:/bin/bash": new_user}
 				substrs = sorted(replacements, key=len, reverse=True)
 				regexp = re.compile('|'.join(map(re.escape, substrs)))
 				passwd_update = regexp.sub(lambda match: replacements[match.group(0)], passwd)
@@ -513,7 +511,7 @@ def issue(cowrie_install_dir):
 
 
 def userdb(cowrie_install_dir):
-	print ('editing userdb') #
+	print ('Editing user database, adding new users.') #
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
@@ -528,34 +526,9 @@ def userdb(cowrie_install_dir):
 			userdb_file.write("\n{0}:x:*".format(user))
 		userdb_file.truncate()
 		userdb_file.close()
-	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
-		userdb = userdb_file.read()
-		userdb_file.seek(0)
-		replacements = {"phil:x:*": "", "phil:x:fout": ""}
-		substrs = sorted(replacements, key=len, reverse=True)
-		regexp = re.compile('|'.join(map(re.escape, substrs)))
-		userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
-		userdb_file.write(userdb_update.strip("\n"))
-		for user in users:
-			userdb_file.write("\n{0}:x:*".format(user))
-		userdb_file.truncate()
-		userdb_file.close()
-	# with open("{0}{1}".format(cowrie_install_dir, "/data/userdb.txt"), "r+") as userdb_file:
-	# 	userdb = userdb_file.read()
-	# 	userdb_file.seek(0)
-	# 	replacements = {"phil:x:*": "", "phil:x:fout": ""}
-	# 	substrs = sorted(replacements, key=len, reverse=True)
-	# 	regexp = re.compile('|'.join(map(re.escape, substrs)))
-	# 	userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
-	# 	userdb_file.write(userdb_update.strip("\n"))
-	# 	for user in users:
-	# 		userdb_file.write("\n{0}:x:*".format(user))
-	# 	userdb_file.truncate()
-	# 	userdb_file.close()
-
 
 def fs_pickle(cowrie_install_dir):
-	print ('creating fs_pickle') #
+	print ('Creating filesystem.') #
 	try:
 		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home"))
 	except FileExistsError:
@@ -608,7 +581,7 @@ header = """\
 | (_) | |_) \__ \ (__| |_| | | |  __/ |
  \___/|_.__/|___/\___|\__,_|_|  \___|_|
 
-  https://github.com/James-Hall/obscurer
+  https://github.com/boscutti939/obscurer
 
 		Cowrie Honeypot Obscurer
 
@@ -642,7 +615,13 @@ if __name__ == "__main__":
 		sys.exit()
 
 	elif options.allthethings is True:
-		print(header)
-		allthethings(args[0])
-		print(output)
+		filepath = args[0]
+		if filepath[-1] == "/":
+			filepath.rstrip('/')
+		if os.isdir(filepath):
+			print(header)
+			allthethings(args[0])
+			print(output)
+		else:
+			print("[!] Incorrect directory path. The path does not exist.")
 		sys.exit()
