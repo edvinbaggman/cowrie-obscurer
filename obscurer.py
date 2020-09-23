@@ -113,7 +113,7 @@ def generate_mac():
 		print("An oui file has already been downloaded. Parse this file or retrieve a new one?")
 		while parsebool != "y" or parsebool != "n":
 			parsebool = input("Input (y/n):")
-			input.lower()
+			parsebool.lower()
 		if parsebool == "n":
 			getoui()
 	else:
