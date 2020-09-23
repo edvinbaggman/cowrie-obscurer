@@ -96,16 +96,28 @@ while i < user_count:
 	password.append(random.choice(passwords))
 	i = i + 1
 
-################## boscutti939 - Getting the list of OUIs and making a MAC Address list
-def generate_mac():
-	global mac_addresses
-	mac_addresses = []
+def getoui():
 	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
 	try:
 		urllib.request.urlretrieve("https://linuxnet.ca/ieee/oui.txt", filename="oui.txt")
 	except Exception:
 		print("Could not retrieve the OUI file. Exiting.")
-		exit()
+		sys.exit()
+
+################## boscutti939 - Getting the list of OUIs and making a MAC Address list
+def generate_mac():
+	global mac_addresses
+	mac_addresses = []
+	if os.path.isfile("oui.txt"):
+		parsebool = ""
+		print("An oui file has already been downloaded. Parse this file or retrieve a new one?")
+		while parsebool != "y" or parsebool != "n":
+			parsebool = input("Input (y/n):")
+			input.lower()
+		if parsebool == "n":
+			getoui()
+	else:
+		getoui()
 	print("Generating random MAC addresses.")
 	ouiarray = []
 	ouifile = open("oui.txt", 'r')
@@ -618,7 +630,7 @@ if __name__ == "__main__":
 		filepath = args[0]
 		if filepath[-1] == "/":
 			filepath.rstrip('/')
-		if os.isdir(filepath):
+		if os.path.isdir(filepath):
 			print(header)
 			allthethings(args[0])
 			print(output)
