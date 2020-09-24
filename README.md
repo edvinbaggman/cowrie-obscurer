@@ -12,7 +12,6 @@ Be aware this will wipe out any custom configuration you have made to the cowrie
 
 * Fresh Cowrie install (no edited configurations or files)
 * Python 3
-* pip install pexpect
 * pip install urllib
 
 ## Usage
