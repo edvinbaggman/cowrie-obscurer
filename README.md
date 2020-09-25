@@ -6,7 +6,7 @@ A Python script designed to remove (nearly) all default values from a Cowrie Hon
 
 A random host profile with new users, hostname, groups, file shares, harddrive(s) sizes, mounts, cpu, ram, OS version, IP address, MAC addresses and SSH version is created. In theory this makes it much harder to easily detect default cowrie honeypot installations.
 
-Be aware this will wipe out any custom configuration you have made to the cowrie.cfg.
+This script will work best with new installations of Cowrie, with unedited configurations.
 
 ## Requirements
 
