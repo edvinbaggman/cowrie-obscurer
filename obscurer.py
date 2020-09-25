@@ -9,7 +9,6 @@ from random import randint
 import time
 from optparse import OptionParser
 import sys
-import pexpect
 import os
 import shutil
 
