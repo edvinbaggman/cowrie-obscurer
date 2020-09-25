@@ -16,7 +16,7 @@ This script will work best with new installations of Cowrie, with unedited confi
 ## Usage
 
 ```
-python obscurer.py [options] path/to/cowrie/directory
+./obscurer.py [options] path/to/cowrie/directory
 
 Options:
   -h, --help    Show this help message and exit
