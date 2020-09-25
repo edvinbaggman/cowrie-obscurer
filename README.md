@@ -23,7 +23,7 @@ Options:
   -a, --allthethings  Change all of the default values
   
 Example:
-python obscurer.py -a /home/cowrie/cowrie/
+./obscurer.py -a /home/cowrie/cowrie/
 ```
 
 Once the script has completed restart the Cowrie service and SSH to the host to confirm changes have been made.
