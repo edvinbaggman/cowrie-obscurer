@@ -161,17 +161,17 @@ def base_py(cowrie_install_dir):
 		base = base_file.read()
 		base_file.seek(0)
 		to_replace = re.findall('(?<=output = \(\n)(.*)(?=for i in range)', base, re.DOTALL)
-		new_base = "\t\t\t('USER      ', ' PID', ' %CPU', ' %MEM', '    VSZ', '   RSS', ' TTY      ', 'STAT ', 'START', '   TIME ', 'COMMAND',),\n"
-		new_base += "\t\t\t('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
+		new_base = "            ('USER      ', ' PID', ' %CPU', ' %MEM', '    VSZ', '   RSS', ' TTY      ', 'STAT ', 'START', '   TIME ', 'COMMAND',),\n"
+		new_base += "            ('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
 			'root', '1', '0.0', '0.0', randint(10000, 25000), randint(500, 2500), '?', 'Ss', time.strftime('%b%d'),
 			'0:00', '/sbin/init')
-		new_base += "\t\t\t('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
+		new_base += "            ('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
 			'root', '2', '0.0', '0.0', '0', '0', '?', 'S', time.strftime('%b%d'), '0:00', '[kthreadd]')
 		r = randint(15, 30)
 		sys_pid = 3
 		while r > 0:
 			sys_pid = sys_pid + randint(1, 3)
-			new_base += "\t\t\t('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
+			new_base += "            ('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
 				'root', sys_pid, '0.0', '0.0', '0', '0', '?', random.choice(['S', 'S<']), time.strftime('%b%d'), '0:00',
 				random.choice(ps_aux_sys))
 			r -= 1
@@ -181,26 +181,26 @@ def base_py(cowrie_install_dir):
 			usr_pid = usr_pid + randint(20, 70)
 			minute = time.strftime('%m')
 			hour = time.strftime('%')
-			new_base += "\t\t\t('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
+			new_base += "            ('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
 				random.choice(['root', user]), usr_pid, '{0}.{1}'.format(randint(0, 4), randint(0, 9)),
 				'{0}.{1}'.format(randint(0, 4), randint(0, 9)), randint(10000, 25000), randint(500, 2500),
 				'?', random.choice(['S', 'S<', 'S+', 'Sl']), time.strftime('%H:%m'), '0:00', random.choice(ps_aux_usr))
 			t -= 1
-		new_base += "\t\t\t('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
+		new_base += "            ('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10},),\n".format(
 			'root', usr_pid + randint(20, 100), '0.{0}'.format(randint(0, 9)), '0.{0}'.format(randint(0, 9)),
 			randint(1000, 6000), randint(500, 2500), '?', random.choice(['S', 'S<', 'S+', 'Sl']),
 			time.strftime('%H:%m'), '0:{0}{1}'.format(0, randint(0, 3)), '/usr/sbin/sshd: %s@pts/0\' % user')
-		new_base += "\t\t\t('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
+		new_base += "            ({0:<10}, '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
 			'\'%s\'.ljust(8) % user', usr_pid + randint(20, 100), '0.{0}'.format(randint(0, 9)),
 			'0.{0}'.format(randint(0, 9)), randint(1000, 6000), randint(500, 2500), 'pts/{0}'.format(randint(0, 5)),
 			random.choice(['S', 'S<', 'S+', 'Sl']), time.strftime('%H:%m'),
 			'0:{0}{1}'.format(0, randint(0, 3)), '-bash')
-		new_base += "\t\t\t('{0:<10}', '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', '{10}',),\n".format(
+		new_base += "            ({0:<10}, '{1:>4}', '{2:>5}', '{3:>5}', '{4:>7}', '{5:>6}', '{6:<10}', '{7:<5}', '{8:>5}', '{9:>8}', {10},),\n".format(
 			'\'%s\'.ljust(8) % user', usr_pid + randint(20, 100), '0.{0}'.format(randint(0, 9)),
 			'0.{0}'.format(randint(0, 9)), randint(1000, 6000), randint(500, 2500), 'pts/{0}'.format(randint(0, 5)),
 			random.choice(['S', 'S<', 'S+', 'Sl']),
 			time.strftime('%H:%m'), '0:{0}{1}'.format(0, randint(0, 3)), '\'ps %s\' % \' \'.join(self.args)')
-		new_base += "\t\t\t)\n\t\t"
+		new_base += "            )\n        "
 		base_replacements = {to_replace[0]: new_base}
 		substrs = sorted(base_replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
@@ -210,7 +210,7 @@ def base_py(cowrie_install_dir):
 		base_file.close()
 
 
-#def free_py(cowrie_install_dir):
+def free_py(cowrie_install_dir):
 	print ('Editing free.py') #
 	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/free.py"), "r+") as free_file:
 		free = free_file.read()
@@ -532,14 +532,14 @@ def userdb(cowrie_install_dir):
 	print ('Editing user database, adding new users.')
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
-	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "r+") as userdb_file:
-		userdb = userdb_file.read()
-		userdb_file.seek(0)
-		replacements = {"phil:x:*": "", "phil:x:fout": ""}
-		substrs = sorted(replacements, key=len, reverse=True)
-		regexp = re.compile('|'.join(map(re.escape, substrs)))
-		userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
-		userdb_file.write(userdb_update.strip("\n"))
+	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "w") as userdb_file: # Changed reading to just writing, removing all default values
+		# userdb = userdb_file.read()
+		# userdb_file.seek(0)
+		# replacements = {"phil:x:*": "", "phil:x:fout": ""}
+		# substrs = sorted(replacements, key=len, reverse=True)
+		# regexp = re.compile('|'.join(map(re.escape, substrs)))
+		# userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
+		# userdb_file.write(userdb_update.strip("\n"))
 		for user in users:
 			userdb_file.write("\n{0}:x:*".format(user))
 		userdb_file.truncate()
