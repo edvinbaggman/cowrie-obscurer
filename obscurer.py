@@ -95,6 +95,7 @@ while i < user_count:
 	password.append(random.choice(passwords))
 	i = i + 1
 
+################## boscutti939 - Getting the list of OUIs and making a MAC Address list
 def getoui():
 	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
 	print("This may take a minute.")
@@ -105,10 +106,9 @@ def getoui():
 		print("Could not retrieve the OUI file. Skipping MAC address changes.")
 		return 1
 
-################## boscutti939 - Getting the list of OUIs and making a MAC Address list
 def generate_mac():
 	mac_addresses = []
-	if os.path.isfile("oui.txt"):
+	if os.path.isfile("oui.txt"): # Check if the oui.txt file exists in the same directory as the script.
 		parsebool = ""
 		print("An oui file has been found. Parse this file or retrieve a new one?")
 		while parsebool != 'p' and parsebool != 'r':
@@ -122,24 +122,26 @@ def generate_mac():
 			return 1
 	print("Generating random MAC addresses.")
 	ouiarray = []
-	ouifile = open("oui.txt", 'r')
+	ouifile = open("oui.txt", 'r') # Open the file for reading.
 	ouifile.seek(0)
 	while (True):
-		line = ouifile.readline()
+		line = ouifile.readline() # Read each line until the end of file.
 		if not line:
 			break
-		if line == "\n":
+		if line == "\n": # Ignore newlines.
 			continue
 		else:
+			# Split the line by tabs and spaces and select the first part of the line.
 			line = line.split('\t')
 			line = line[0].split(' ')
 			line = line[0]
+			# Use Regex matching to determine it is the format of a MAC address.
 			pattern = re.compile("[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}")
 			if pattern.match(line):
-				ouiarray.append(line.replace('-',':'))
+				ouiarray.append(line.replace('-',':')) # Replace the hyphens with colons.
 	mac_addresses = []
 	for i in ouiarray:
-		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex()))
+		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex())) # Generate a MAC address and add to the array.
 	return mac_addresses
 #########################################################################################
 
@@ -250,21 +252,20 @@ def free_py(cowrie_install_dir):
 def ifconfig_py(cowrie_install_dir):
 	print ("Editing ifconfig and arp file.")
 	mac_addresses = generate_mac()
-	if mac_addresses == 1:
+	if mac_addresses == 1: # If the generate_mac() function couldn't generate MAC addresses, skip this function.
 		return
 	macaddress = random.choice(mac_addresses)
+	mac_addresses.remove(macaddress)
 	macaddress2 = random.choice(mac_addresses)
-	while macaddress2 == macaddress:
-		macaddress2 = random.choice(mac_addreses)
-	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/ifconfig.py"), "r+") as ifconfig_file:
+	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/ifconfig.py"), "r+") as ifconfig_file: # Open the ifconfig.py file
 		ifconfig = ifconfig_file.read()
 		ifconfig_file.seek(0)
 		hwaddrstring = "HWaddr = \"{0}\"".format(macaddress)
-		eth_rx = randint(10000000000, 500000000000)
-		eth_tx = randint(10000000000, 500000000000)
-		lo_rxtx = randint(10000, 99999)
+		eth_rx = randint(10000000000, 500000000000) # Generate random number of bytes recieved
+		eth_tx = randint(10000000000, 500000000000) # Generate random number of bytes transmitted
+		lo_rxtx = randint(10000, 99999) # Generate random number of bytes
 		ifconfig_replacements = {"""HWaddr = \"%02x:%02x:%02x:%02x:%02x:%02x\" % (
-    randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255))""": '{0}'.format(hwaddrstring)}
+    randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255))""": '{0}'.format(hwaddrstring)} # Replace string with these values.
 		substrs = sorted(ifconfig_replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		ifconfig_update = regexp.sub(lambda match: ifconfig_replacements[match.group(0)], ifconfig)
@@ -272,15 +273,14 @@ def ifconfig_py(cowrie_install_dir):
 		ifconfig_file.truncate()
 		ifconfig_file.close()
 	print ("Editing arp file.")
-	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/net/arp"), "r+") as arp_file:
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/net/arp"), "r+") as arp_file: # Open the arp file.
 		arp = arp_file.read()
 		arp_file.seek(0)
-
 		base_ip = '.'.join(ip_address.split('.')[0:3])
 		arp_replacements = {'192.168.1.27': '{0}.{1}'.format(base_ip, random.randint(1, 255)),
 							'192.168.1.1': '{0}.{1}'.format(base_ip, '1'),
 							'52:5e:0a:40:43:c8': '{0}'.format(macaddress),
-							'00:00:5f:00:0b:12': '{0}'.format(macaddress2)}
+							'00:00:5f:00:0b:12': '{0}'.format(macaddress2)} # Replace strings with these values.
 		substrs = sorted(arp_replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		arp_update = regexp.sub(lambda match: arp_replacements[match.group(0)], arp)
