@@ -10,7 +10,7 @@ This script will work best with new installations of Cowrie, with unedited confi
 
 ## Requirements
 
-* Fresh Cowrie install (no edited configurations or files)
+* Fresh Cowrie install (no edited configurations or files) (using virtualenv with python 3)
 * Python 3
 
 ## Usage
@@ -26,4 +26,4 @@ Example:
 ./obscurer.py -a /home/cowrie/cowrie/
 ```
 
-Once the script has completed restart the Cowrie service and SSH to the host to confirm changes have been made.
+Once the script has completed, restart the Cowrie service and SSH to the host to confirm changes have been made.
