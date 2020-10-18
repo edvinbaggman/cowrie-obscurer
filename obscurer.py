@@ -291,15 +291,16 @@ def ifconfig_py(cowrie_install_dir):
 
 def version_uname(cowrie_install_dir):
 	print ('Changing uname and version.')
-	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/version"), "w")  as version_file:
-		version_file.write(version)
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/version"), "w")  as version_file: # Open the version file.
+		version_file.write(version) # Write the version name to it.
 		version_file.close()
-	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/uname.py"), "r+")  as uname_file:
+	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/uname.py"), "r+")  as uname_file: # Open the uname script.
 		uname_py = uname_file.read()
 		uname_file.seek(0)
 		test = ""
 		refunc = "(?<=version ).*?(?= \()"
 		uname_kernel = re.findall(refunc, version)
+		# Find these strings and replace them.
 		replacements = {"3.2.0-4-amd64 #1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux": version[14:],
 						"3.2.0-4-amd64": '{0}'.format(uname_kernel[0]), 'amd64': 'x86_64'}
 		substrs = sorted(replacements, key=len, reverse=True)
@@ -311,7 +312,7 @@ def version_uname(cowrie_install_dir):
 
 
 def meminfo_py(cowrie_install_dir):
-	print ('replacing meminfo_py values.') #
+	print ('replacing meminfo_py values.')
 	kb_ram = ram_size * 1000
 	meminfo = \
 		'MemTotal:        {0} kB\nMemFree:         {1} kB\nMemAvailable:    {2} kB\nCached:          {3} kB\nSwapCached:            0 kB\n' \
@@ -347,16 +348,17 @@ def meminfo_py(cowrie_install_dir):
 																	  '{0}'.format(int(kb_ram / 17)),
 																	  '{0}'.format(int(kb_ram / 25)),
 																	  '{0}'.format(int(kb_ram / 20)))
-	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/meminfo"), "w")  as new_meminfo:
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/meminfo"), "w")  as new_meminfo: # Open the meminfo file and write the memory information to it.
 		new_meminfo.write(meminfo)
 		new_meminfo.close()
 
 
 def mounts(cowrie_install_dir):
 	print ('Changing mounts.')
-	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/mounts"), "r+") as mounts_file: 
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/mounts"), "r+") as mounts_file: # Open the mounts file.
 		mounts = mounts_file.read()
 		mounts_file.seek(0)
+		# Search for these strings to be replaced.
 		mounts_replacements = {'rootfs / rootfs rw 0 0': '', '10240': '{0}'.format(random.randint(10000, 25000)),
 							   '/dev/dm-0 / ext3': '/dev/{0}1 / ext4'.format(random.choice(physical_hd)),
 							   '/dev/sda1 /boot ext2 rw,relatime 0 0': '/dev/{0}2 /{1} ext4 rw,nosuid,relatime 0 0'.format(
@@ -397,15 +399,15 @@ def group(cowrie_install_dir):
 	print ('Editing group file.')
 	y = 0
 	num = 1001
-	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/group"), "r+") as group_file:
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/group"), "r+") as group_file: # Open the group file.
 		group = group_file.read()
 		group_file.seek(0)
 		group_update = ""
-		while y < len(users):
+		while y < len(users): # Using iteration to add users.
 			if y == 0:
 				new_user = "{0}:x:{1}:{2}:{3},,,:/home/{4}:/bin/bash".format(users[y], str(num), str(num), users[y],
 																			 users[y])
-				replacements = {"phil": users[y], "sudo:x:27:": "{0}{1}".format("sudo:x:27:", users[y])}
+				replacements = {"phil": users[y], "sudo:x:27:": "{0}{1}".format("sudo:x:27:", users[y])} # Replace these strings with usernames.
 				substrs = sorted(replacements, key=len, reverse=True)
 				regexp = re.compile('|'.join(map(re.escape, substrs)))
 				group_update = regexp.sub(lambda match: replacements[match.group(0)], group)
@@ -425,21 +427,20 @@ def passwd(cowrie_install_dir):
 	print ('Changing passwd file.')
 	y = 1
 	num = 1000
-	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/passwd"), "r+") as passwd_file:
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/passwd"), "r+") as passwd_file: # Open the passwd file.
 		passwd = passwd_file.read()
 		passwd_file.seek(0)
 		passwd_update = ""
-		while y <= len(users):
+		while y <= len(users): # Using iteration to add users.
 			if y == 1:
 				new_user = "{0}:x:{1}:{2}:{3},,,:/home/{4}:/bin/bash".format(users[y-1], str(num), str(num), users[y-1],
 																			 users[y-1])
-				replacements = {"phil:x:1000:1000:Phil California,,,:/home/phil:/bin/bash": new_user}
+				replacements = {"phil:x:1000:1000:Phil California,,,:/home/phil:/bin/bash": new_user} # replace the string with a new user.
 				substrs = sorted(replacements, key=len, reverse=True)
 				regexp = re.compile('|'.join(map(re.escape, substrs)))
 				passwd_update = regexp.sub(lambda match: replacements[match.group(0)], passwd)
 			elif y > 1:
 				passwd_update += "{0}:x:{1}:{2}:{3},,,:/home/{4}:/bin/bash\n".format(users[y-1], str(num), str(num), users[y-1], users[y-1])
-				#pass
 			y = y + 1
 			num = num + 1
 		passwd_file.write(passwd_update)
@@ -451,18 +452,19 @@ def shadow(cowrie_install_dir):
 	print ('Changing shadow file.')
 	x = 1
 	shadow_update = ""
-	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/shadow"), "r+") as shadow_file:
+	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/shadow"), "r+") as shadow_file: # Open the shadow file.
 		shadow = shadow_file.read()
 		shadow_file.seek(0)
 		shadow_update = ""
 		days_since = random.randint(16000, 17200)
-		salt = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
-		while x <= len(users):
+		salt = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8)) # Using a salt to hash the passwords.
+		while x <= len(users): # Using iteration to add users.
 			if x == 1:
 				gen_pass = crypt.crypt(password[x-1], "$6$" + salt)
 				salt = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
 				new_user = "{0}:{1}:{2}:0:99999:7:::".format(users[x-1], gen_pass, random.randint(16000, 17200))
 				new_root_pass = crypt.crypt("password", "$6$" + salt)
+				# Replace certain strings with new users.
 				replacements = {"15800": str(days_since),
 								"phil:$6$ErqInBoz$FibX212AFnHMvyZdWW87bq5Cm3214CoffqFuUyzz.ZKmZ725zKqSPRRlQ1fGGP02V/WawQWQrDda6YiKERNR61:15800:0:99999:7:::\n": new_user,
 								"$6$4aOmWdpJ$/kyPOik9rR0kSLyABIYNXgg/UqlWX3c1eIaovOLWphShTGXmuUAMq6iu9DrcQqlVUw3Pirizns4u27w3Ugvb6": new_root_pass}
@@ -480,7 +482,7 @@ def shadow(cowrie_install_dir):
 
 def cowrie_cfg(cowrie_install_dir):
 	print ('Editing main configuration.')
-	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg")):
+	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg")): # Check if the cowrie.cfg file exists, otherwise, copy it from cowrie.cfg.dist.
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg.dist"),"{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "r+") as cowrie_cfg:
 		cowrie_config = cowrie_cfg.read()
@@ -541,7 +543,8 @@ def userdb(cowrie_install_dir):
 		# userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
 		# userdb_file.write(userdb_update.strip("\n"))
 		for user in users:
-			userdb_file.write("\n{0}:x:*".format(user))
+			for p in password:
+				userdb_file.write("\n{0}:x:{1}".format(user,p))
 		userdb_file.truncate()
 		userdb_file.close()
 
