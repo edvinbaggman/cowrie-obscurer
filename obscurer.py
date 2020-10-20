@@ -616,7 +616,7 @@ Internal IP: {6}
 """.format(users, password, hostname, version, sshversion, "2222", ip_address)
 
 if __name__ == "__main__":
-	parser = OptionParser(usage='usage: python %prog cowrie/install/dir [options]')
+	parser = OptionParser(usage='usage: python3 %prog cowrie/install/dir [options]')
 	parser.add_option("-a", "--allthethings", action='store_true', default='False', help="Change all the things")
 	(options, args) = parser.parse_args()
 
