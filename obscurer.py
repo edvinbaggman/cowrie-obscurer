@@ -81,6 +81,13 @@ ssh_ver = ['SSH-2.0-OpenSSH_5.1p1 Debian-5', 'SSH-1.99-OpenSSH_4.3', 'SSH-1.99-O
 		   'SSH-2.0-OpenSSH_5.3p1 Debian-3ubuntu6', 'SSH-2.0-OpenSSH_5.3p1 Debian-3ubuntu7',
 		   'SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2', 'SSH-2.0-OpenSSH_5.9p1 Debian-5ubuntu1',
 		   ' SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u1']
+arch = ["bsd-aarch64-lsb","bsd-aarch64-msb","bsd-bfin-msb","bsd-mips64-lsb","bsd-mips64-msb",
+		"bsd-mips-lsb","bsd-mips-msb","bsd-powepc64-lsb","bsd-powepc-msb","bsd-riscv64-lsb","bsd-sparc64-msb","bsd-sparc-msb","bsd-x32-lsb","bsd-x64-lsb","linux-aarch64-lsb",
+		"linux-aarch64-msb","linux-alpha-lsb","linux-am33-lsb","linux-arc-lsb","linux-arc-msb","linux-arm-lsb","linux-arm-msb","linux-avr32-lsb","linux-bfin-lsb","linux-c6x-lsb",
+		"linux-c6x-msb","linux-cris-lsb","linux-frv-msb","linux-h8300-msb","linux-hppa64-msb","linux-hppa-msb","linux-ia64-lsb","linux-m32r-msb","linux-m68k-msb",
+		"linux-microblaze-msb","linux-mips64-lsb","linux-mips64-msb","linux-mips-lsb","linux-mips-msb","linux-mn10300-lsb","linux-nios-lsb","linux-nios-msb","linux-powerpc64-lsb",
+		"linux-powerpc64-msb","linux-powerpc-lsb","linux-powerpc-msb","linux-riscv64-lsb","linux-s390x-msb","linux-sh-lsb","linux-sh-msb","linux-sparc64-msb","linux-sparc-msb",
+		"linux-tilegx64-lsb","linux-tilegx64-msb","linux-tilegx-lsb","linux-tilegx-msb","linux-x64-lsb","linux-x86-lsb","linux-xtensa-msb","osx-x32-lsb","osx-x64-lsb"]
 sshversion = random.choice(ssh_ver)
 user_count = random.randint(1, 3)
 users = []
@@ -487,9 +494,13 @@ def cowrie_cfg(cowrie_install_dir):
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "r+") as cowrie_cfg:
 		cowrie_config = cowrie_cfg.read()
 		cowrie_cfg.seek(0)
+		test = ""
+		refunc = "(?<=version ).*?(?= \()"
+		uname_kernel = re.findall(refunc, version)
 		replacements = {"svr04": hostname, "#fake_addr = 192.168.66.254": "fake_addr = {0}".format(ip_address),
 		"ssh_version_string = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2": "ssh_version_string = {0}".format(sshversion), "#listen_port = 2222": "listen_port = 2222",
-		"tcp:2222": "tcp:2222"}
+		"tcp:2222": "tcp:2222",
+		"kernel_version = 3.2.0-4-amd64":"kernel_version = {0}".format(uname_kernel[0])}
 		substrs = sorted(replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		config_update = regexp.sub(lambda match: replacements[match.group(0)], cowrie_config)
