@@ -42,6 +42,15 @@ nix_versions = {
 	'Linux version 3.13.0-108-generic (buildd@lgw01-60) (gcc version 4.8.4 (Ubuntu 4.8.4-2ubuntu1~14.04.3) ) #155-Ubuntu SMP Wed Jan 11 16:58:52 UTC 2017':
 		'Linux {0} 3.13.0-108-generic #155-Ubuntu SMP Wed Jan 11 16:58:52 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux'.format(
 			hostname)}
+
+kbs = ["#1 SMP Red Hat 4.4.6-4",
+						"#55~14.04.1-Ubuntu SMP",
+						"#1 SMP Debian 4.6.4-1nix1",
+						"#155-Ubuntu SMP"]
+kernel_build_string = random.choice(kbs)
+
+
+
 version, uname = random.choice(list(nix_versions.items()))
 processors = ['Intel(R) Core(TM) i7-2960XM CPU @ 2.70GHz', 'Intel(R) Core(TM) i5-4590S CPU @ 3.00GHz',
 			  'Intel(R) Core(TM) i3-4005U CPU @ 1.70GHz']
@@ -81,6 +90,13 @@ ssh_ver = ['SSH-2.0-OpenSSH_5.1p1 Debian-5', 'SSH-1.99-OpenSSH_4.3', 'SSH-1.99-O
 		   'SSH-2.0-OpenSSH_5.3p1 Debian-3ubuntu6', 'SSH-2.0-OpenSSH_5.3p1 Debian-3ubuntu7',
 		   'SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2', 'SSH-2.0-OpenSSH_5.9p1 Debian-5ubuntu1',
 		   ' SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u1']
+arch = ["bsd-aarch64-lsb","bsd-aarch64-msb","bsd-bfin-msb","bsd-mips64-lsb","bsd-mips64-msb",
+		"bsd-mips-lsb","bsd-mips-msb","bsd-powepc64-lsb","bsd-powepc-msb","bsd-riscv64-lsb","bsd-sparc64-msb","bsd-sparc-msb","bsd-x32-lsb","bsd-x64-lsb","linux-aarch64-lsb",
+		"linux-aarch64-msb","linux-alpha-lsb","linux-am33-lsb","linux-arc-lsb","linux-arc-msb","linux-arm-lsb","linux-arm-msb","linux-avr32-lsb","linux-bfin-lsb","linux-c6x-lsb",
+		"linux-c6x-msb","linux-cris-lsb","linux-frv-msb","linux-h8300-msb","linux-hppa64-msb","linux-hppa-msb","linux-ia64-lsb","linux-m32r-msb","linux-m68k-msb",
+		"linux-microblaze-msb","linux-mips64-lsb","linux-mips64-msb","linux-mips-lsb","linux-mips-msb","linux-mn10300-lsb","linux-nios-lsb","linux-nios-msb","linux-powerpc64-lsb",
+		"linux-powerpc64-msb","linux-powerpc-lsb","linux-powerpc-msb","linux-riscv64-lsb","linux-s390x-msb","linux-sh-lsb","linux-sh-msb","linux-sparc64-msb","linux-sparc-msb",
+		"linux-tilegx64-lsb","linux-tilegx64-msb","linux-tilegx-lsb","linux-tilegx-msb","linux-x64-lsb","linux-x86-lsb","linux-xtensa-msb","osx-x32-lsb","osx-x64-lsb"]
 sshversion = random.choice(ssh_ver)
 user_count = random.randint(1, 3)
 users = []
@@ -295,21 +311,6 @@ def version_uname(cowrie_install_dir):
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/version"), "w")  as version_file: # Open the version file.
 		version_file.write(version) # Write the version name to it.
 		version_file.close()
-	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/uname.py"), "r+")  as uname_file: # Open the uname script.
-		uname_py = uname_file.read()
-		uname_file.seek(0)
-		test = ""
-		refunc = "(?<=version ).*?(?= \()"
-		uname_kernel = re.findall(refunc, version)
-		# Find these strings and replace them.
-		replacements = {"3.2.0-4-amd64 #1 SMP Debian 3.2.68-1+deb7u1 x86_64 GNU/Linux": version[14:],
-						"3.2.0-4-amd64": '{0}'.format(uname_kernel[0]), 'amd64': 'x86_64'}
-		substrs = sorted(replacements, key=len, reverse=True)
-		regexp = re.compile('|'.join(map(re.escape, substrs)))
-		uname_update = regexp.sub(lambda match: replacements[match.group(0)], uname_py)
-		uname_file.write(uname_update.strip("\n"))
-		uname_file.truncate()
-		uname_file.close()
 
 
 def meminfo_py(cowrie_install_dir):
@@ -488,9 +489,14 @@ def cowrie_cfg(cowrie_install_dir):
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "r+") as cowrie_cfg:
 		cowrie_config = cowrie_cfg.read()
 		cowrie_cfg.seek(0)
+		test = ""
+		refunc = "(?<=version ).*?(?= \()"
+		uname_kernel = re.findall(refunc, version)
 		replacements = {"svr04": hostname, "#fake_addr = 192.168.66.254": "fake_addr = {0}".format(ip_address),
 		"ssh_version_string = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2": "ssh_version_string = {0}".format(sshversion), "#listen_port = 2222": "listen_port = 2222",
-		"tcp:2222": "tcp:2222"}
+		"tcp:2222": "tcp:2222",
+		"kernel_version = 3.2.0-4-amd64": "kernel_version = {0}".format(uname_kernel[0]),
+		"kernel_build_string = #1 SMP Debian 3.2.68-1+deb7u1": "kernel_build_string = {0}".format(kernel_build_string)}
 		substrs = sorted(replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		config_update = regexp.sub(lambda match: replacements[match.group(0)], cowrie_config)
@@ -536,13 +542,6 @@ def userdb(cowrie_install_dir):
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "w") as userdb_file: # Changed reading to just writing, removing all default values
-		# userdb = userdb_file.read()
-		# userdb_file.seek(0)
-		# replacements = {"phil:x:*": "", "phil:x:fout": ""}
-		# substrs = sorted(replacements, key=len, reverse=True)
-		# regexp = re.compile('|'.join(map(re.escape, substrs)))
-		# userdb_update = regexp.sub(lambda match: replacements[match.group(0)], userdb)
-		# userdb_file.write(userdb_update.strip("\n"))
 		for user in users:
 			for p in password:
 				userdb_file.write("\n{0}:x:{1}".format(user,p))
@@ -585,13 +584,13 @@ def allthethings(cowrie_install_dir):
 		pass
 
 header = """\
-        _
-       | |
-    __ | |__  ___  ___ _   _ _ __ ___ _ __
-  / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
- | (_) | |_) \__ \ (__| |_| | | |  __/ |
-  \___/|_.__/|___/\___|\__,_|_|  \___|_|
-
+              _
+             | |
+          __ | |__  ___  ___ _   _ _ __ ___ _ __
+        / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
+       | (_) | |_) \__ \ (__| |_| | | |  __/ |
+        \___/|_.__/|___/\___|\__,_|_|  \___|_|
+      
       https://github.com/boscutti939/obscurer
 
            Cowrie Honeypot Obscurer
@@ -617,7 +616,7 @@ Internal IP: {6}
 """.format(users, password, hostname, version, sshversion, "2222", ip_address)
 
 if __name__ == "__main__":
-	parser = OptionParser(usage='usage: python %prog cowrie/install/dir [options]')
+	parser = OptionParser(usage='usage: python3 %prog cowrie/install/dir [options]')
 	parser.add_option("-a", "--allthethings", action='store_true', default='False', help="Change all the things")
 	(options, args) = parser.parse_args()
 
