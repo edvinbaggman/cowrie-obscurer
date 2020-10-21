@@ -265,7 +265,8 @@ def ifconfig_py(cowrie_install_dir):
 		eth_tx = randint(10000000000, 500000000000) # Generate random number of bytes transmitted
 		lo_rxtx = randint(10000, 99999) # Generate random number of bytes
 		ifconfig_replacements = {"""HWaddr = \"%02x:%02x:%02x:%02x:%02x:%02x\" % (
-    randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255))""": '{0}'.format(hwaddrstring)} # Replace string with these values.
+    randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255), randint(0, 255))""": '{0}'.format(hwaddrstring),
+    	"self.protocol.kippoIP": '{0}'.format(ip_address)} # Replace string with these values.
 		substrs = sorted(ifconfig_replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		ifconfig_update = regexp.sub(lambda match: ifconfig_replacements[match.group(0)], ifconfig)
