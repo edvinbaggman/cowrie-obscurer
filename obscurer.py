@@ -108,7 +108,9 @@ while i < user_count:
 	users.append(rand_user)
 	usernames.remove(rand_user)
 	service.append(random.choice(services))
-	password.append(random.choice(passwords))
+	passwd = random.choice(passwords)
+	password.append(passwd)
+	passwords.remove(passwd)
 	i = i + 1
 
 ################## boscutti939 - Getting the list of OUIs and making a MAC Address list
