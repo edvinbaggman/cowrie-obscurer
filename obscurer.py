@@ -376,7 +376,8 @@ def mounts(cowrie_install_dir):
 		mounts_file.truncate()
 		mounts_file.close()
 
-
+# The following function replaces the certain values of the cpuinfo file in the  directory cowre/honeyfs/proc.
+#  Values such as model name , vendor, speed and cache size are changed. 
 def cpuinfo(cowrie_install_dir):
 	print ('Replacing CPU Info.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/cpuinfo"), "r+") as cpuinfo_file:
@@ -398,7 +399,8 @@ def cpuinfo(cowrie_install_dir):
 		cpuinfo_file.truncate()
 		cpuinfo_file.close()
 
-
+# The function below replaces the  default user phil  with a selection of other usernames randomly chosen in the script. 
+# It opens the group file in the directory /cowrie/honeyfs/etc and replaces the string "phil" with other usernames.
 def group(cowrie_install_dir):
 	print ('Editing group file.')
 	y = 0
@@ -426,7 +428,7 @@ def group(cowrie_install_dir):
 		group_file.truncate()
 		group_file.close()
 
-
+# The following function below makes changes to the passwd file in the directory /cowrie/honeyfs/etc by replacing the user phil with a selection of random usernames
 def passwd(cowrie_install_dir):
 	print ('Changing passwd file.')
 	y = 1
@@ -451,7 +453,7 @@ def passwd(cowrie_install_dir):
 		passwd_file.truncate()
 		passwd_file.close()
 
-
+# The following function below edits the shadow file in the directory /cowrie/honeyfs/etc which removes the phil user in addition to adding new users with salted hash passwords
 def shadow(cowrie_install_dir):
 	print ('Changing shadow file.')
 	x = 1
@@ -483,7 +485,9 @@ def shadow(cowrie_install_dir):
 		shadow_file.truncate()
 		shadow_file.close()
 
-
+# The following functions below edits the main configuration of Cowrie under the filename /etc/cowrie.cfg
+# It checks if a copy of the configuraiton exists and  if not then it creatres a copy ofrom the directory /etc/cowrie.cfg.dist.
+# The functiones changes the hostnames as well as the fake ip  ip address to another value
 def cowrie_cfg(cowrie_install_dir):
 	print ('Editing main configuration.')
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg")): # Check if the cowrie.cfg file exists, otherwise, copy it from cowrie.cfg.dist.
@@ -508,7 +512,7 @@ def cowrie_cfg(cowrie_install_dir):
 			cowrie_cfg_update.truncate()
 			cowrie_cfg_update.close()
 
-
+# The following function below replaces the  default hostname in the directory /honeyfs/etc/hosts from nas3 to any of the hostnames in the 'hostnames' array
 def hosts(cowrie_install_dir):
 	print ('Replacing Hosts.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/hosts"), "r+") as host_file:
@@ -518,7 +522,7 @@ def hosts(cowrie_install_dir):
 		host_file.truncate()
 		host_file.close()
 
-
+# The function below makes changes to the  directory /honeyfs/etc/hostname in which it replaces"svr04" to  any of the hostsnames in the  'hostnames' array 
 def hostname_py(cowrie_install_dir):
 	print ('Changing hostname.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/hostname"), "r+") as hostname_file:
@@ -528,7 +532,7 @@ def hostname_py(cowrie_install_dir):
 		hostname_file.truncate()
 		hostname_file.close()
 
-
+#The following function below replaces the  identified operating system in the directory /honeyfs/etc/issue from Debian GNU/Linux 7 to any in the 'operatingsystem' array.
 def issue(cowrie_install_dir):
 	print ('Changing issue.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/issue"), "r+") as issue_file:
@@ -538,9 +542,9 @@ def issue(cowrie_install_dir):
 		issue_file.truncate()
 		issue_file.close()
 
-
+# The following function below replaces the  users associated with direcotry /etc/userdb.txt  by replacing the  usernames and passwords from the 'usernames' and 'passwords' array.
 def userdb(cowrie_install_dir):
-	print ('Editing user database, adding new users.')
+	print ('Editing user database, replacing defaults users.')
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "w") as userdb_file: # Changed reading to just writing, removing all default values
@@ -549,7 +553,8 @@ def userdb(cowrie_install_dir):
 				userdb_file.write("\n{0}:x:{1}".format(user,p))
 		userdb_file.truncate()
 		userdb_file.close()
-
+# The following function below  checks whether or not  the fs.pickle file exist in the directory /honeyfs/home.
+# If the  file does not exist then the function below creates the "home" directory inside the honeyfs and using the command 'bin/createfs -l../honeyfs -o fs.piickle' to create the pickle file.
 def fs_pickle(cowrie_install_dir):
 	print ('Creating filesystem.')
 	try:
