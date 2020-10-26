@@ -114,6 +114,10 @@ while i < user_count:
 	i = i + 1
 
 ################## boscutti939 - Getting the list of OUIs and making a MAC Address list
+# Prior to changing any values in the Cowrie, the following function below  downloads a sanitized OUI file from the website https://linuxnet.ca
+# In the events the oui.txt file from the website is unavailable due (i.e. no internet conneciton) it will return with an exit code 1.
+# This skips the generate_mac() and ifconfig_py() functions.
+# This function is used if the user wishes to download a new oui.txt.file OR if the oui.txt does not exist in thje directory
 def getoui():
 	print("Retrieving a sanitized OUI file from \"https://linuxnet.ca/\".")
 	print("This may take a minute.")
@@ -123,7 +127,8 @@ def getoui():
 	except Exception:
 		print("Could not retrieve the OUI file. Skipping MAC address changes.")
 		return 1
-
+# The function below ustilizes the getoui() function to downloada list of valid OUI's. 
+# If the oui.txt file exists in the directory, it will then prompt the user to parse the file instead download a new one.
 def generate_mac():
 	mac_addresses = []
 	if os.path.isfile("oui.txt"): # Check if the oui.txt file exists in the same directory as the script.
@@ -173,7 +178,9 @@ ip_ranges = ['10.{0}.{1}.{2}'.format(random.randint(1, 255), random.randint(1, 2
 ip_address = random.choice(ip_ranges)
 ipv6_number = list(map(int, ip_address.split('.')))
 
-
+# Within the Cowrie source code, the base_py() function changes a command in the cowrie/src/commands/base/py script.
+# It contains many commands, particularly the 'ps' comand, which is emulated in the honeypot
+# This function is now obsolete however as further review has shown the default base.py script in Cowrie is already obscured enough.
 def base_py(cowrie_install_dir):
 	print ('Editing base.py') #
 	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/base.py"), "r+") as base_file:
@@ -229,7 +236,9 @@ def base_py(cowrie_install_dir):
 		base_file.truncate()
 		base_file.close()
 
-
+# The following function below edits the free.py script in the directory cowrie/src/commands within the Cowrie source code.
+# By default, Cowrie  grabs the memory information from the meminfo file located inside the proc directory of the honeyfs
+# The function below shows the memory info rmation about the honeypot based on the meminfo_py() function
 def free_py(cowrie_install_dir):
 	print ('Editing free.py') #
 	with open("{0}{1}".format(cowrie_install_dir, "/src/cowrie/commands/free.py"), "r+") as free_file:
@@ -266,7 +275,11 @@ def free_py(cowrie_install_dir):
 		free_file.truncate()
 		free_file.close()
 
-
+# The following  function makes changes to the ifconfig.py file in the directory cowrie/src/commands within the Cowrie source code.
+# In particular, it changes the  the MAC address in the directory cowrie/honeyfs/proc/net/arp which is related to the  generate_mac() and getoui() functions.
+# It picks from an array of MAC addresses and writes it to  the ifconfig command and arp file
+# By default, Cowrie assigns a fake MAC address by using using the randint (0,255) several times.
+	# This was replaced with a string containing a legitimate MAC from the generate_mac() function.
 def ifconfig_py(cowrie_install_dir):
 	print ("Editing ifconfig and arp file.")
 	mac_addresses = generate_mac()
@@ -314,7 +327,9 @@ def version_uname(cowrie_install_dir):
 		version_file.write(version) # Write the version name to it.
 		version_file.close()
 
-
+# The following fuction replaces the meminfo file in  the directory cowrie/honeyfs/proc with randomised information about the memory of the simulated system.
+# Similar to the format of the default file, a large string is  generated with randomised values.
+# Most of these values use the same variable adnd have been divided  by certain integers as most of these values are proportional to each other 
 def meminfo_py(cowrie_install_dir):
 	print ('replacing meminfo_py values.')
 	kb_ram = ram_size * 1000
@@ -356,7 +371,8 @@ def meminfo_py(cowrie_install_dir):
 		new_meminfo.write(meminfo)
 		new_meminfo.close()
 
-
+# The function below replaces  information about mounted drives and disks  in the directory cowrie/honeyfs/proc/mounts.
+# The mounts file contains a random number of storage drives with random names and random disks sizes assigned.
 def mounts(cowrie_install_dir):
 	print ('Changing mounts.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/proc/mounts"), "r+") as mounts_file: # Open the mounts file.
@@ -400,7 +416,7 @@ def cpuinfo(cowrie_install_dir):
 		cpuinfo_file.close()
 
 # The function below replaces the  default user phil  with a selection of other usernames randomly chosen in the script. 
-# It opens the group file in the directory /cowrie/honeyfs/etc and replaces the string "phil" with other usernames.
+# It opens the group file in the directory cowrie/honeyfs/etc and replaces the string "phil" with other usernames.
 def group(cowrie_install_dir):
 	print ('Editing group file.')
 	y = 0
@@ -428,7 +444,7 @@ def group(cowrie_install_dir):
 		group_file.truncate()
 		group_file.close()
 
-# The following function below makes changes to the passwd file in the directory /cowrie/honeyfs/etc by replacing the user phil with a selection of random usernames
+# The following function below makes changes to the passwd file in the directory cowrie/honeyfs/etc by replacing the user phil with a selection of random usernames
 def passwd(cowrie_install_dir):
 	print ('Changing passwd file.')
 	y = 1
@@ -453,7 +469,7 @@ def passwd(cowrie_install_dir):
 		passwd_file.truncate()
 		passwd_file.close()
 
-# The following function below edits the shadow file in the directory /cowrie/honeyfs/etc which removes the phil user in addition to adding new users with salted hash passwords
+# The following function below edits the shadow file in the directory cowrie/honeyfs/etc which removes the phil user in addition to adding new users with salted hash passwords
 def shadow(cowrie_install_dir):
 	print ('Changing shadow file.')
 	x = 1
@@ -485,8 +501,8 @@ def shadow(cowrie_install_dir):
 		shadow_file.truncate()
 		shadow_file.close()
 
-# The following functions below edits the main configuration of Cowrie under the filename /etc/cowrie.cfg
-# It checks if a copy of the configuraiton exists and  if not then it creatres a copy ofrom the directory /etc/cowrie.cfg.dist.
+# The following functions below edits the main configuration of Cowrie under the filename etc/cowrie.cfg
+# It checks if a copy of the configuraiton exists and  if not then it creatres a copy ofrom the directory etc/cowrie.cfg.dist.
 # The functiones changes the hostnames as well as the fake ip  ip address to another value
 def cowrie_cfg(cowrie_install_dir):
 	print ('Editing main configuration.')
@@ -512,7 +528,7 @@ def cowrie_cfg(cowrie_install_dir):
 			cowrie_cfg_update.truncate()
 			cowrie_cfg_update.close()
 
-# The following function below replaces the  default hostname in the directory /honeyfs/etc/hosts from nas3 to any of the hostnames in the 'hostnames' array
+# The following function below replaces the  default hostname in the directory honeyfs/etc/hosts from "nas3" to any of the hostnames in the 'hostnames' array
 def hosts(cowrie_install_dir):
 	print ('Replacing Hosts.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/hosts"), "r+") as host_file:
@@ -522,7 +538,7 @@ def hosts(cowrie_install_dir):
 		host_file.truncate()
 		host_file.close()
 
-# The function below makes changes to the  directory /honeyfs/etc/hostname in which it replaces"svr04" to  any of the hostsnames in the  'hostnames' array 
+# The function below makes changes to the  directory honeyfs/etc/hostname in which it replaces"svr04" to  any of the hostsnames in the  'hostnames' array 
 def hostname_py(cowrie_install_dir):
 	print ('Changing hostname.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/hostname"), "r+") as hostname_file:
@@ -532,7 +548,7 @@ def hostname_py(cowrie_install_dir):
 		hostname_file.truncate()
 		hostname_file.close()
 
-#The following function below replaces the  identified operating system in the directory /honeyfs/etc/issue from Debian GNU/Linux 7 to any in the 'operatingsystem' array.
+#The following function below replaces the  identified operating system in the directory honeyfs/etc/issue from Debian GNU/Linux 7 to any in the 'operatingsystem' array.
 def issue(cowrie_install_dir):
 	print ('Changing issue.')
 	with open("{0}{1}".format(cowrie_install_dir, "/honeyfs/etc/issue"), "r+") as issue_file:
@@ -542,7 +558,7 @@ def issue(cowrie_install_dir):
 		issue_file.truncate()
 		issue_file.close()
 
-# The following function below replaces the  users associated with direcotry /etc/userdb.txt  by replacing the  usernames and passwords from the 'usernames' and 'passwords' array.
+# The following function below replaces the  users associated with direcotry etc/userdb.txt  by replacing the  usernames and passwords from the 'usernames' and 'passwords' array.
 def userdb(cowrie_install_dir):
 	print ('Editing user database, replacing defaults users.')
 	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
@@ -553,7 +569,7 @@ def userdb(cowrie_install_dir):
 				userdb_file.write("\n{0}:x:{1}".format(user,p))
 		userdb_file.truncate()
 		userdb_file.close()
-# The following function below  checks whether or not  the fs.pickle file exist in the directory /honeyfs/home.
+# The following function below  checks whether or not  the fs.pickle file exist in the directory honeyfs/home.
 # If the  file does not exist then the function below creates the "home" directory inside the honeyfs and using the command 'bin/createfs -l../honeyfs -o fs.piickle' to create the pickle file.
 def fs_pickle(cowrie_install_dir):
 	print ('Creating filesystem.')
@@ -566,7 +582,8 @@ def fs_pickle(cowrie_install_dir):
 	except FileNotFoundError:
 		pass
 	os.system("{0}/bin/createfs -l {0}/honeyfs -o {0}/share/cowrie/fs.pickle".format(cowrie_install_dir))
-
+# The following function below  executes the installations one at a time
+# In the events of an error, it will prompt a message to check the file path and try again
 def allthethings(cowrie_install_dir):
 	try:
 		# base_py(cowrie_install_dir)
