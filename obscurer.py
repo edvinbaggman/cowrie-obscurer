@@ -12,6 +12,8 @@ import sys
 import os
 import shutil
 
+SCRIPT_VERSION = "1.0.2"
+
 def rand_hex():
 	return '{0}{1}'.format(random.choice('0123456789ABCDEF'), random.choice('0123456789ABCDEF'))
 
@@ -608,20 +610,21 @@ def allthethings(cowrie_install_dir):
 		pass
 
 header = """\
-              _
-             | |
-          __ | |__  ___  ___ _   _ _ __ ___ _ __
-        / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
-       | (_) | |_) \__ \ (__| |_| | | |  __/ |
-        \___/|_.__/|___/\___|\__,_|_|  \___|_|
+            _
+           | |
+        __ | |__  ___  ___ _   _ _ __ ___ _ __
+      / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
+     | (_) | |_) \__ \ (__| |_| | | |  __/ |
+      \___/|_.__/|___/\___|\__,_|_|  \___|_|
       
       https://github.com/boscutti939/obscurer
 
-           Cowrie Honeypot Obscurer
+              Cowrie Honeypot Obscurer
+                   Version {0}
 
   Forked from https://github.com/411Hall/obscurer
 
-"""
+""".format(SCRIPT_VERSION)
 
 output = """\
 
