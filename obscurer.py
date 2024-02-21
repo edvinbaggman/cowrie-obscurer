@@ -573,6 +573,14 @@ def fs_pickle(cowrie_install_dir):
 	print ('Creating filesystem.')
 	try:
 		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/tmp"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/var"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/bin"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/sys"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/root"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home/admin"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home/anders"))
+		os.mkdir("{0}{1}".format(cowrie_install_dir, "/honeyfs/home/guest"))
 	except FileExistsError:
 		pass
 	try:
