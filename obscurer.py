@@ -158,17 +158,11 @@ def generate_mac():
 		else:
 			# Split the line by tabs and spaces and select the first part of the line.
 			line = line.split('\t')
-			line = line[0].split(' ')
 			line = line[0]
-			# Use Regex matching to determine it is the format of a MAC address.
-			pattern = re.compile("[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}\-[0-9A-Fa-f]{2}")
-			if pattern.match(line):
-				ouiarray.append(line.replace('-',':')) # Replace the hyphens with colons.
+			ouiarray.append(line)
 	mac_addresses = []
 	for i in ouiarray:
 		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex())) # Generate a MAC address and add to the array.
-	print("mac_addresses:")
-	print(mac_addresses)
 	return mac_addresses
 #########################################################################################
 
