@@ -382,7 +382,7 @@ def mounts(cowrie_install_dir):
 							   '/dev/dm-0 / ext3': '/dev/{0}1 / ext4'.format(random.choice(physical_hd)),
 							   '/dev/sda1 /boot ext2 rw,relatime 0 0': '/dev/{0}2 /{1} ext4 rw,nosuid,relatime 0 0'.format(
 								   random.choice(physical_hd), random.choice(mount_names)),
-							   'mapper': '{0}'.format(random.choice(usernames))}
+							   'mapper': '{0}'.format(random.choice(users))}
 		substrs = sorted(mounts_replacements, key=len, reverse=True)
 		regexp = re.compile('|'.join(map(re.escape, substrs)))
 		mounts_update = regexp.sub(lambda match: mounts_replacements[match.group(0)], mounts)
