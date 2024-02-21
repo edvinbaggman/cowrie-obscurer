@@ -20,7 +20,7 @@ def rand_hex():
 def random_int(len):
 	return random.randint()
 
-usernames = ['admin', 'support', 'guest', 'user', 'service', 'tech', 'administrator']
+usernames =  ['admin', 'guest', 'root', 'anders'] # ['admin', 'support', 'guest', 'user', 'service', 'tech', 'administrator']
 passwords = ['system', 'enable', 'password', 'shell', 'root', 'support']
 services = ['syslog', 'mongodb', 'statd', 'pulse']
 operatingsystem = ['Ubuntu 14.04.5 LTS', 'Ubuntu 16.04 LTS', 'Debian GNU/Linux 6']
@@ -100,7 +100,7 @@ arch = ["bsd-aarch64-lsb","bsd-aarch64-msb","bsd-bfin-msb","bsd-mips64-lsb","bsd
 		"linux-powerpc64-msb","linux-powerpc-lsb","linux-powerpc-msb","linux-riscv64-lsb","linux-s390x-msb","linux-sh-lsb","linux-sh-msb","linux-sparc64-msb","linux-sparc-msb",
 		"linux-tilegx64-lsb","linux-tilegx64-msb","linux-tilegx-lsb","linux-tilegx-msb","linux-x64-lsb","linux-x86-lsb","linux-xtensa-msb","osx-x32-lsb","osx-x64-lsb"]
 sshversion = random.choice(ssh_ver)
-user_count = random.randint(1, 3)
+user_count = len(usernames) #random.randint(1, 3)
 users = []
 password = []
 service = []
@@ -286,6 +286,7 @@ def ifconfig_py(cowrie_install_dir):
 	print ("Editing ifconfig and arp file.")
 	mac_addresses = generate_mac()
 	if mac_addresses == 1: # If the generate_mac() function couldn't generate MAC addresses, skip this function.
+		print("MAX address was not generated, exiting ifconfig_py")
 		return
 	macaddress = random.choice(mac_addresses)
 	mac_addresses.remove(macaddress)
@@ -567,8 +568,7 @@ def userdb(cowrie_install_dir):
 		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "w") as userdb_file: # Changed reading to just writing, removing all default values
 		for user in users:
-			for p in password:
-				userdb_file.write("\n{0}:x:{1}".format(user,p))
+			userdb_file.write("\n{0}:x:*".format(user))
 		userdb_file.truncate()
 		userdb_file.close()
 # The following function below  checks whether or not  the fs.pickle file exist in the directory honeyfs/home.
