@@ -167,6 +167,8 @@ def generate_mac():
 	mac_addresses = []
 	for i in ouiarray:
 		mac_addresses.append(i + ":{0}:{1}:{2}".format(rand_hex(), rand_hex(), rand_hex())) # Generate a MAC address and add to the array.
+	print("mac_addresses:")
+	print(mac_addresses)
 	return mac_addresses
 #########################################################################################
 
