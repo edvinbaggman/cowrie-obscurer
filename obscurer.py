@@ -599,7 +599,7 @@ def allthethings(cowrie_install_dir):
 		hostname_py(cowrie_install_dir)
 		issue(cowrie_install_dir)
 		userdb(cowrie_install_dir)
-		fs_pickle(cowrie_install_dir)
+		# fs_pickle(cowrie_install_dir)
 	except:
 		e = sys.exc_info()[1]
 		print("\nError: {0}\nCheck file path and try again.".format(e))
