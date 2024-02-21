@@ -9809,7 +9809,6 @@ F4645D	Toshiba
 589B0B	Shineway Technologies, Inc.
 A48CDB	Lenovo
 4062B6	Tele system communication
-3C2C94	杭州德澜科技有限公司（HangZhou Delan Technology Co.,Ltd）
 78312B	zte corporation
 C035C5	Prosoft Systems LTD
 F8B2F3	GUANGZHOU BOSMA TECHNOLOGY CO.,LTD
