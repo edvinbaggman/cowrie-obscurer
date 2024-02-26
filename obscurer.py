@@ -54,8 +54,7 @@ kernel_build_string = random.choice(kbs)
 
 
 version, uname = random.choice(list(nix_versions.items()))
-processors = ['Intel(R) Core(TM) i7-2960XM CPU @ 2.70GHz', 'Intel(R) Core(TM) i5-4590S CPU @ 3.00GHz',
-			  'Intel(R) Core(TM) i3-4005U CPU @ 1.70GHz']
+processors = ['Intel(R) Core(TM) i5-4590S CPU @ 3.00GHz']
 cpu_flags = ['rdtscp', 'arch_perfmon', 'nopl', 'xtopology', 'nonstop_tsc', 'aperfmperf', 'eagerfpu', 'pclmulqdq',
 			 'dtes64', 'pdcm', 'pcid',
 			 'sse4_2', 'x2apic', 'popcnt', 'tsc_deadline_timer', 'xsave', 'avx', 'epb', 'tpr_shadow', 'vnmi',
@@ -595,46 +594,12 @@ def allthethings(cowrie_install_dir):
 		print("\nError: {0}\nCheck file path and try again.".format(e))
 		pass
 
-header = """\
-            _
-           | |
-        __ | |__  ___  ___ _   _ _ __ ___ _ __
-      / _ \| '_ \/ __|/ __| | | | '__/ _ \ '__|
-     | (_) | |_) \__ \ (__| |_| | | |  __/ |
-      \___/|_.__/|___/\___|\__,_|_|  \___|_|
-      
-      https://github.com/boscutti939/obscurer
-
-              Cowrie Honeypot Obscurer
-                   Version {0}
-
-  Forked from https://github.com/411Hall/obscurer
-
-""".format(SCRIPT_VERSION)
-
-output = """\
-
-Cowrie Configuration Updated
-----------------------------
-
-Accepted Username(s): {0}
-Accepted Password(s): {1}
-
-Hostname: {2}
-Operating System: {3}
-SSH Version: {4}
-SSH Listen Port: {5}
-Internal IP: {6}
-
-""".format(users, password, hostname, version, sshversion, "2222", ip_address)
-
 if __name__ == "__main__":
 	parser = OptionParser(usage='usage: python3 %prog cowrie/install/dir [options]')
 	parser.add_option("-a", "--allthethings", action='store_true', default='False', help="Change all the things")
 	(options, args) = parser.parse_args()
 
 	if len(args) < 1:
-		print(header)
 		print("[!] Not enough Arguments, Need at least file path")
 		parser.print_help()
 		sys.exit()
@@ -644,9 +609,8 @@ if __name__ == "__main__":
 		if filepath[-1] == "/":
 			filepath.rstrip('/')
 		if os.path.isdir(filepath):
-			print(header)
 			allthethings(args[0])
-			print(output)
+			print('Done!')
 		else:
 			print("[!] Incorrect directory path. The path does not exist.")
 		sys.exit()
