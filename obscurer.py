@@ -20,12 +20,12 @@ def rand_hex():
 def random_int(len):
 	return random.randint()
 
-usernames =  ['admin', 'guest', 'root', 'anders'] # ['admin', 'support', 'guest', 'user', 'service', 'tech', 'administrator']
+usernames =  ['anders'] # ['admin', 'support', 'guest', 'user', 'service', 'tech', 'administrator']
 passwords = ['system', 'enable', 'password', 'shell', 'root', 'support']
 services = ['syslog', 'mongodb', 'statd', 'pulse']
 operatingsystem = ['Ubuntu 14.04.5 LTS', 'Ubuntu 16.04 LTS', 'Debian GNU/Linux 6']
 hostnames = ['web', 'db', 'nas', 'dev', 'backups', 'dmz']
-hostname = random.choice(hostnames)
+hostname = 'dev' #random.choice(hostnames)
 nix_versions = {
 	'Linux version 2.6.32-042stab116.2 (root@kbuild-rh6-x64.eng.sw.ru) (gcc version 4.4.6 20120305 (Red Hat 4.4.6-4) (GCC) ) #1 SMP Fri Jun 24 15:33:57 MSK 2016':
 		'Linux {0} 2.6.32-042stab116.2 #1 SMP Fri Jun 24 15:33:57 MSK 2016 x86_64 x86_64 x86_64 GNU/Linux'.format(
@@ -505,25 +505,10 @@ def shadow(cowrie_install_dir):
 # The functiones changes the hostnames as well as the fake ip  ip address to another value
 def cowrie_cfg(cowrie_install_dir):
 	print ('Editing main configuration.')
-	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg")): # Check if the cowrie.cfg file exists, otherwise, copy it from cowrie.cfg.dist.
-		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg.dist"),"{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"))
-	with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "r+") as cowrie_cfg:
+	with open("cowrie.cfg", "r+") as cowrie_cfg:
 		cowrie_config = cowrie_cfg.read()
-		cowrie_cfg.seek(0)
-		test = ""
-		refunc = "(?<=version ).*?(?= \()"
-		uname_kernel = re.findall(refunc, version)
-		replacements = {"svr04": hostname, "#fake_addr = 192.168.66.254": "fake_addr = {0}".format(ip_address),
-		"version = SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2": "version = {0}".format(sshversion), "#listen_port = 2222": "listen_port = 2222",
-		"tcp:2222": "tcp:2222",
-		"kernel_version = 3.2.0-4-amd64": "kernel_version = {0}".format(uname_kernel[0]),
-		"kernel_build_string = #1 SMP Debian 3.2.68-1+deb7u1": "kernel_build_string = {0}".format(kernel_build_string)}
-		substrs = sorted(replacements, key=len, reverse=True)
-		regexp = re.compile('|'.join(map(re.escape, substrs)))
-		config_update = regexp.sub(lambda match: replacements[match.group(0)], cowrie_config)
-		cowrie_cfg.close()
 		with open("{0}{1}".format(cowrie_install_dir, "/etc/cowrie.cfg"), "w+") as cowrie_cfg_update:
-			cowrie_cfg_update.write(config_update)
+			cowrie_cfg_update.write(cowrie_config)
 			cowrie_cfg_update.truncate()
 			cowrie_cfg_update.close()
 
@@ -560,11 +545,8 @@ def issue(cowrie_install_dir):
 # The following function below replaces the  users associated with direcotry etc/userdb.txt  by replacing the  usernames and passwords from the 'usernames' and 'passwords' array.
 def userdb(cowrie_install_dir):
 	print ('Editing user database, replacing defaults users.')
-	if not os.path.isfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt")):
-		shutil.copyfile("{0}{1}".format(cowrie_install_dir, "/etc/userdb.example"),"{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"))
 	with open("{0}{1}".format(cowrie_install_dir, "/etc/userdb.txt"), "w") as userdb_file: # Changed reading to just writing, removing all default values
-		for user in users:
-			userdb_file.write("\n{0}:x:*".format(user))
+		userdb_file.write("*:x:*")
 		userdb_file.truncate()
 		userdb_file.close()
 # The following function below  checks whether or not  the fs.pickle file exist in the directory honeyfs/home.
@@ -607,7 +589,7 @@ def allthethings(cowrie_install_dir):
 		hostname_py(cowrie_install_dir)
 		issue(cowrie_install_dir)
 		userdb(cowrie_install_dir)
-		fs_pickle(cowrie_install_dir)
+		#fs_pickle(cowrie_install_dir)
 	except:
 		e = sys.exc_info()[1]
 		print("\nError: {0}\nCheck file path and try again.".format(e))
